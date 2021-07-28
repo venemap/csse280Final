@@ -2,6 +2,13 @@ body {
     background: #DDDDDD;
 }
 
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+  }
+
 .login-buttons{
     float: right;
 }
@@ -10,6 +17,10 @@ body {
     background-color: #800000;
     color: white;
     z-index: 1;
+}
+
+.BugetOverview-buttons{
+    text-align: center;
 }
 
 .page-container {
