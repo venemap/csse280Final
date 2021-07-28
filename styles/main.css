@@ -2,6 +2,10 @@ body {
     background: #DDDDDD;
 }
 
+.login-buttons{
+    float: right;
+}
+
 .navbar {
     background-color: #800000;
     color: white;
