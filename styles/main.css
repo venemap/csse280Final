@@ -2,12 +2,20 @@ body {
     background: #DDDDDD;
 }
 
+#budgetOverviewPage h1{
+    padding-bottom: 20px;
+}
+
+#budgetOverviewPage h2{
+    padding-bottom: 90px;
+}
+
 .center {
     display: block;
     margin-left: auto;
     margin-right: auto;
     width: 50%;
-  }
+}
 
 .login-buttons{
     float: right;
@@ -19,7 +27,7 @@ body {
     z-index: 1;
 }
 
-.BugetOverview-buttons{
+.Main-buttons{
     text-align: center;
 }
 
