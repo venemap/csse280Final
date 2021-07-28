@@ -5,33 +5,11 @@ body {
 .navbar {
     background-color: #800000;
     color: white;
+    z-index: 1;
 }
 
 .page-container {
     margin-top: 75px;
-}
-
-.sidenav {
-    width: 160px;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    background-color: #111;
-    overflow-x: hidden;
-    padding-top: 20px
-}
-
-.sidenav a {
-    padding: 6px 8px 6px 16px;
-    text-decoration: none;
-    font-size: 25px;
-    color: #818181;
-    display: block;
-}
-
-.sidenav a:hover {
-    color: #f1f1f1;
 }
 
 .main {
@@ -48,29 +26,28 @@ body {
     height: 100%;
     padding: 20px 0;
     transition: all 0.5s ease;
-    z-index: 1;
 }
 
+/* Sidebar top tab */
 .wrapper .sidebar .profile {
     margin-bottom: 30px;
     text-align: center;
+    margin-top: 20px;
 }
-
 .wrapper .sidebar .profile h3 {
     color: #fff;
     margin: 10px 0 5px;
 }
-
 .wrapper .sidebar .profile p {
     color: rgb(206, 240, 253);
     font-size: 14px;
 }
 
+/* Sidebar list items */
 .wrapper .sidebar ul {
     list-style-type: none;
     padding-inline-start: 0;
 }
-
 .wrapper .sidebar ul li a {
     display: block;
     padding: 13px 30px;
@@ -79,6 +56,10 @@ body {
     font-size: 16px;
     position: relative;
 }
+/* add top border to only first element in list */
+.wrapper .sidebar ul li:first-child {
+    border-top: 1px solid #10558d;
+}
 
 .wrapper .sidebar ul li a .icon {
     color: #dee4ec;
@@ -86,17 +67,14 @@ body {
     display: inline-block;
 }
 
-.wrapper .sidebar ul li a:hover, .wrapper .sidebar ul li a.active {
+/* Active sidebar element */
+.wrapper .sidebar ul li a:hover, 
+.wrapper .sidebar ul li a.active {
     color: #0c7db1;
     background: white;
-    border-right: 2px solid rgb(5, 68, 104);
 }
-
-.wrapper .sidebar ul li a:hover .icon, .wrapper .sidebar ul li a.acive .icon {
-    color: #0c7db1;
-}
-
-.wrapper .sidebar ul li a:hover:before, .wrapper .sidebar ul li a.active:before {
+.wrapper .sidebar ul li a:hover:before, 
+.wrapper .sidebar ul li a.active:before {
     display: block;
 }
 
@@ -104,6 +82,11 @@ body {
     width: calc(100% - 225px);
     margin-left: 225px;
     transition: all 0.5s ease;
+}
+/* Add small spacing for dropdown icon to be centered */
+.section {
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .wrapper .section .top_navbar {
@@ -122,11 +105,23 @@ body {
     color: #a2ecff;
 }
 
+/* Initialize with sidebar hidden */
 body.active .wrapper .sidebar {
+    left: 0px;
+}
+body .wrapper .sidebar {
     left: -225px;
 }
 
+/* Hold sidebar width */
 body.active .wrapper .section {
     margin-left: 0;
     width: 100px;
+}
+
+.dropdownIcon {
+    width: 25px;
+    height: 2px;
+    background-color: white;
+    margin: 4px 0;
 }
