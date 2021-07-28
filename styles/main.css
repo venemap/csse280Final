@@ -3,7 +3,7 @@ body {
 }
 
 .navbar {
-    background-color: #800000;
+    background-color: lightseagreen;
     color: white;
     z-index: 1;
 }
@@ -124,4 +124,38 @@ body.active .wrapper .section {
     height: 2px;
     background-color: white;
     margin: 4px 0;
+}
+
+.top_navbar {
+    display: inline-block;
+}
+
+.top_pageDisplay {
+    display: inline-block;
+}
+
+
+
+
+/* TESTING LOGIN CSS */
+#loginWrapper, #creationWrapper, #recoverWrapper {
+    text-align: center;
+    margin-top: 50%;
+    margin-bottom: 50%;
+}
+#loginWrapper input, #creationWrapper input, #recoverWrapper {
+    margin-bottom: 10px;
+}
+#loginWrapper a#forgotLogin {
+    color: black;
+    /* TODO: Make the onclick action turn link blue for a short time */
+}
+#creationWrapper button {
+    margin-left: auto;
+    /* TODO: Right align the button */
+}
+
+#recoverWrapper #emailNotFoundText {
+    font-size: 0.8rem;
+    color: red;
 }

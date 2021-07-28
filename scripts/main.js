@@ -32,10 +32,21 @@ rhit.ClassName = class {
 rhit.main = function () {
 	console.log("Ready");
 
-let hide = document.querySelector(".hideable");
-hide.addEventListener("click", function() {
-	document.querySelector("body").classList.toggle("active");
-})
+// only run js for sidemenu if it exists on the page
+if(document.querySelector(".hideable")){
+	let hide = document.querySelector(".hideable");
+	hide.addEventListener("click", function() {
+		document.querySelector("body").classList.toggle("active");
+	})
+}
+if(document.querySelector("#loginPage")) {
+	let forgotLogin = document.querySelector("#createAccountBtn").onclick  = (params) => {
+		window.location.href = "accountCreation.html";
+	};
+
+}
+
+
 
 };
 
