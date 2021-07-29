@@ -7,7 +7,8 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
   <link rel="stylesheet" href="styles/bootstrap-material-design.min.css">
   <link rel="stylesheet" href="styles/main.css">
-  <title>App Name</title>
+  <script async custon-element="amp-sidebar" src="https://cdn.ampproject.org/v0/amp-sidebar-0.1.js"></script>
+  <title>Overview</title>
 </head>
 
 <body>
@@ -15,17 +16,26 @@
     <div class="section">
       <div class="top_navbar">
         <div class="hideable">
-          <a href="#">
+          <!-- <a href="#">
             <div class="dropdownIcon"></div>
             <div class="dropdownIcon"></div>
             <div class="dropdownIcon"></div>
-          </a>
+          </a> -->
+          <span class="material-icons">view_headline</span>
         </div>
       </div>
     </div>
-  </nav>
-  <div id="mainPage" class="container page-container">
 
+  </nav>
+  <div id="budgetOverviewPage" class="container page-container">
+
+    <h1>Lorem ipsum, rem cumque?</h1>
+    <h2>Lorem ipsum dolor, pariatur ut optio expedita!</h2>
+
+    <div class="BudgetOverview-Label">
+      <span style="float: left;">Lorem ipsum dolor</span>
+      <span style="float: right;" class="material-icons">more_horiz</span>    
+    </div>
 
     <div class="wrapper">
       <div class="sidebar">
@@ -36,7 +46,7 @@
         </div>
        <ul>
         <li>
-          <a href="main.html" class="sidebarElement">
+          <a href="main.html" class="sidebarElement active">
             <span class="item">Overview</span>
           </a>
         </li>
@@ -46,7 +56,7 @@
           </a>
         </li>
         <li>
-          <a href="budgetOverview.html" class="sidebarElement active">
+          <a href="budgetOverview.html" class="sidebarElement">
             <span class="item">Budgets</span>
           </a>
         </li>
@@ -63,7 +73,7 @@
        </ul>
       </div>
     </div>
-    
+
   </div>
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>
