@@ -76,11 +76,11 @@ rhit.AuthManager = class {
 }
 
 rhit.checkForRedirects = function(){
-	if(document.querySelector("#loginPage") && rhit.fbAuthManger.isSignedIn){
+	if(document.querySelector("#login") && rhit.fbAuthManger.isSignedIn){
 		window.location.href = "/main.html";
 	}
 
-	if(!document.querySelector("#loginPage") && !rhit.fbAuthManger.isSignedIn){
+	if(!document.querySelector("#login") && !rhit.fbAuthManger.isSignedIn){
 		window.location.href = "/";
 	}
 
@@ -88,15 +88,15 @@ rhit.checkForRedirects = function(){
 
 rhit.initializePage = function(){
 	const urlParams = new URLSearchParams(window.location.search);
-	if(document.querySelector("#mainPage")){
-		console.log("You are on the main page");
+	if(document.querySelector("#login")){
+		console.log("You are on the login page");
 		//rhit.fbMovieQuoteManager = new rhit.FbMovieQuotesManager();
 		const uid = urlParams.get("uid");
 		//rhit.fbMovieQuoteManager = new rhit.FbMovieQuotesManager(uid);
-		new rhit.MainPageController();
+		// rhit.MainPageController();
 	}
 
-	if(document.querySelector("#")){}
+	//if(document.querySelector("#")){}
 }
 
 /* Main */
