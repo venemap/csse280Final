@@ -32,10 +32,62 @@
     <h1>Lorem ipsum, rem cumque?</h1>
     <h2>Lorem ipsum dolor, pariatur ut optio expedita!</h2>
 
+    <div class="wrapper-budgets">
+
+   
     <div class="BudgetOverview-Label">
-      <span style="float: left;">Lorem ipsum dolor</span>
-      <span style="float: right;" class="material-icons">more_horiz</span>    
+      <span>Example Budget #1: $ 34/200 </span>
+
+      <span class="dropdown pull-xs-right budget-option-menu">
+        <button class="btn bmd-btn-icon dropdown-toggle" type="button" id="lr1" data-toggle="dropdown">
+          <i class="material-icons">more_horiz</i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="lr1">
+          <button class="dropdown-item" type="button"><i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;&nbsp;Edit</button>
+          <button class="dropdown-item" type="button"><i class="material-icons">delete</i>&nbsp;&nbsp;&nbsp;&nbsp;Delete</button>
+        </div>
+      </span>
     </div>
+
+    <br> 
+    
+    <div class="BudgetOverview-Label">
+      <span>Example Budget #2: $ 23/100</span>
+
+      <span class="dropdown pull-xs-right budget-option-menu">
+        <button class="btn bmd-btn-icon dropdown-toggle" type="button" id="lr1" data-toggle="dropdown">
+          <i class="material-icons">more_horiz</i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="lr1">
+          <button class="dropdown-item" type="button"><i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;&nbsp;Edit</button>
+          <button class="dropdown-item" type="button"><i class="material-icons">delete</i>&nbsp;&nbsp;&nbsp;&nbsp;Delete</button>
+        </div>
+      </span>
+    </div>
+    <br>
+
+    <div class="BudgetOverview-Label">
+      <span>Example Budget #3: $ 0/60</span>
+
+      <span class="dropdown pull-xs-right budget-option-menu">
+        <button class="btn bmd-btn-icon dropdown-toggle" type="button" id="lr1" data-toggle="dropdown">
+          <i class="material-icons">more_horiz</i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="lr1">
+          <button class="dropdown-item" type="button"><i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;&nbsp;Edit</button>
+          <button class="dropdown-item" type="button"><i class="material-icons">delete</i>&nbsp;&nbsp;&nbsp;&nbsp;Delete</button>
+        </div>
+      </span>
+    </div>
+    <br>
+
+  </div>
+
+  <button id="fab" type="button" class="btn btn-primary bmd-btn-fab" data-toggle="modal" data-target="#exampleModal" onclick="window.location.href='budgetCreation.html'">
+    <i class="material-icons">add</i>
+  </button>
+
+    
 
     <div class="wrapper">
       <div class="sidebar">
@@ -46,7 +98,7 @@
         </div>
        <ul>
         <li>
-          <a href="main.html" class="sidebarElement active">
+          <a href="main.html" class="sidebarElement">
             <span class="item">Overview</span>
           </a>
         </li>
@@ -56,7 +108,7 @@
           </a>
         </li>
         <li>
-          <a href="budgetOverview.html" class="sidebarElement">
+          <a href="budgetOverview.html" class="sidebarElement active">
             <span class="item">Budgets</span>
           </a>
         </li>
@@ -73,6 +125,7 @@
        </ul>
       </div>
     </div>
+
 
   </div>
   <script src="scripts/jquery.min.js"></script>

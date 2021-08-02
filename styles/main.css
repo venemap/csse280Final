@@ -182,3 +182,7 @@ body.active .wrapper .section {
     font-size: 0.8rem;
     color: red;
 }
+
+.budget-option-menu {
+    float: right;
+}
