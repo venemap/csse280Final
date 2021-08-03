@@ -6,8 +6,12 @@ rhit.variableName = "";
 rhit.FB_BUDGET_COLLECTION = "Budget"
 rhit.FB_KEY_AMOUNT = "Amount";
 rhit.FB_KEY_CATEGORY = "Category";
+rhit.FB_EXPENSE_COLLECTION = "Expenses"
+rhit.FB_KEY_DATE = "Date"
 rhit.fbBudgetManager = null;
 rhit.fbSingleBudgetManager = null;
+rhit.fbExpenseManager = null;
+rhit.fbSingleExpenseManager = null;
 rhit.fbAuthManager = null;
 
 function htmlToElement(html) {
@@ -29,14 +33,12 @@ rhit.BudgetListPageController = class {
 	constructor() {
 		rhit.fbBudgetManager.beginListening(this.updateList.bind(this));
 		
-		if(document.querySelector("#logoutClick")) {
-			document.querySelector("#logoutClick").onclick = (event) => {
-				console.log("sign out");
-				firebase.auth().signOut();
-	
-				// rhit.fbAuthManager.signOut();
-			}
-		}
+		// if(document.querySelector("#logoutClick")) {
+		// 	document.querySelector("#logoutClick").onclick = (event) => {
+		// 		console.log("sign out");
+		// 		firebase.auth().signOut();
+		// 	}
+		// }
 	}
 
 	_createBudget(budget) {
@@ -131,7 +133,105 @@ rhit.FbBudgetManager = class {
 	}
 }
 
+rhit.Expense = class {
+	constructor(id, category, amount, date) {
+		this.id = id;
+		this.category = category;
+		this.amount = amount; 
+		this.date = date;
+	}
+}
 
+rhit.ExpenseListPageController = class {
+	constructor() {
+		rhit.fbExpenseManager.beginListening(this.updateList.bind(this));
+	}
+
+	_createExpense(expense) {
+		return htmlToElement(`<div id="ExpenseOverview-Label">
+		<span>${expense.category} $ ${expense.amount}</span><span class="expenseDate">${expense.date.toDate().getMonth()}/${expense.date.toDate().getDay()}/${expense.date.toDate().getFullYear()}</span>
+  
+		<span class="dropdown pull-xs-right budget-option-menu">
+		  <button class="btn bmd-btn-icon dropdown-toggle" type="button" id="lr1" data-toggle="dropdown">
+			<i class="material-icons">more_horiz</i>
+		  </button>
+		  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="lr1">
+			<button class="dropdown-item" type="button"><i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;&nbsp;Edit</button>
+			<button class="dropdown-item" type="button"><i class="material-icons">delete</i>&nbsp;&nbsp;&nbsp;&nbsp;Delete</button>
+		  </div>
+		</span>
+	  </div>
+	  <br>`);
+	}
+
+	updateList(){
+		console.log("I need to update the list of the expense page");
+		console.log(`Num expenses = ${rhit.fbExpenseManager.length}`);
+		console.log(`Example expense = `, rhit.fbExpenseManager.getExpenseAtIndex(0));
+
+		const newList = htmlToElement(`<div id="wrapper-expenses"></div>`);
+
+		for(let i = 0; i < rhit.fbExpenseManager.length; i++) {
+			const exp = rhit.fbExpenseManager.getExpenseAtIndex(i);
+			const newExpense = this._createExpense(exp);
+
+			newExpense.onclick = (event) => {
+				console.log(`you clicked on ${exp.id}`);
+			}
+
+			newList.appendChild(newExpense);
+		}
+
+		const oldList = document.querySelector("#wrapper-expenses");
+		oldList.removeAttribute("id");
+
+		oldList.hidden = true;
+
+		oldList.parentElement.appendChild(newList);
+	}
+}
+
+rhit.FbExpenseManager = class {
+	constructor() {
+		this._documentSnapshots = [];
+		this._ref = firebase.firestore().collection(rhit.FB_EXPENSE_COLLECTION);
+		this._unsubscribe = null;
+	}
+
+	beginListening(changeListener) {
+		this._unsubscribe = this._ref.limit(30).onSnapshot((querySnapshot) => {
+			console.log("expensemanager update");
+
+			this._documentSnapshots = querySnapshot.docs;
+
+			querySnapshot.forEach((doc) => {
+				console.log(doc.data());
+			});
+
+		changeListener();
+		});
+	}
+
+	stopListening() {
+		this._unsubscribe();
+	}
+
+	get length() {
+		return this._documentSnapshots.length;
+	}
+	getExpenseAtIndex(index) {
+		const docSnapshot = this._documentSnapshots[index];
+		const exp = new rhit.Expense(
+			docSnapshot.id,
+			docSnapshot.get(rhit.FB_KEY_CATEGORY),
+			docSnapshot.get(rhit.FB_KEY_AMOUNT),
+			docSnapshot.get(rhit.FB_KEY_DATE),
+		);
+		return exp;
+	}
+
+
+}
 
 rhit.LoginPageController = class {
 	constructor() {
@@ -269,6 +369,13 @@ rhit.main = function () {
 		rhit.fbBudgetManager = new rhit.FbBudgetManager();
 
 		new rhit.BudgetListPageController();
+	}
+
+	if(document.querySelector("#expensePage")) {
+		console.log("you are on the expense page");
+		rhit.fbExpenseManager = new rhit.FbExpenseManager();
+
+		new rhit.ExpenseListPageController();
 	}
 
 	

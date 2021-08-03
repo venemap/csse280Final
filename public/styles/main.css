@@ -184,6 +184,7 @@ body.active .wrapper .section {
 }
 
 .budget-option-menu {
+    display: block;
     float: right;
 }
 
@@ -199,4 +200,10 @@ body.active .wrapper .section {
 #fab:active {
     transform: translateY(2px);
     opacity: 0.8;
+}
+
+.expenseDate {
+    display: block;
+    float: right;
+    left: -10px;
 }
