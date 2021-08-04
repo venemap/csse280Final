@@ -8,6 +8,7 @@ rhit.FB_KEY_AMOUNT = "Amount";
 rhit.FB_KEY_CATEGORY = "Category";
 rhit.FB_EXPENSE_COLLECTION = "Expenses"
 rhit.FB_KEY_DATE = "Date"
+rhit.fbExpenseChangeManager = null;
 rhit.fbBudgetManager = null;
 rhit.fbSingleBudgetManager = null;
 rhit.fbExpenseManager = null;
@@ -282,6 +283,74 @@ rhit.FbExpenseAddController = class {
 	}
 }
 
+rhit.FbExpenseChangeManager = class {
+	constructor(expenseId) {
+		this._documentSnapshot = {};
+		this._unsubscribe = null;
+		this._ref = firebase.firestore().collection(rhit.FB_EXPENSE_COLLECTION).doc(expenseId);
+
+		console.log(`Listening to ${this._ref.path}`);
+	}
+
+	beginListening(changeListener) {
+		this._ref.onSnapshot((doc) => {
+			if(doc.exists) {
+				console.log("Docuemnt data: ", doc.data());
+				this._documentSnapshot = doc;
+				changeListener();
+			} else {
+				console.log("No such document");
+			}
+		})
+	}
+
+	stopListening() {
+		this._unsubscribe();
+	}
+
+	update(amount, category) {
+		console.log("update quote");
+
+		this._ref.update({
+
+		})
+		.then(() => {
+			console.log("document succesfully updated");
+		})
+		.catch(function(error) {
+			console.error("Error updating document: ", error);
+		})
+	}
+
+	get amount() {
+		return this._documentSnapshot.get(rhit.FB_KEY_AMOUNT);
+	}
+
+	get category() {
+		return this._documentSnapshot.get(rhit.FB_KEY_CATEGORY);
+	}
+
+	get date() {
+		return this._documentSnapshot.get(rhit.FB_KEY_DATE);
+	}
+}
+
+rhit.ExpenseChangePageController = class {
+	constructor() {
+		console.log("made expenseChangePageController");
+
+		rhit.fbExpenseChangeManager.beginListening(this.updateView.bind(this));
+	}
+
+	updateView() {
+		console.log("updating expense solo page");
+
+		document.querySelector("#editExpenseAmount").value = rhit.fbExpenseChangeManager.amount;
+		document.querySelector("#editExpenseCategory").value = rhit.fbExpenseChangeManager.category;
+		document.querySelector("#editExpenseDate").value = rhit.fbExpenseChangeManager.date;
+	}
+}
+
 rhit.LoginPageController = class {
 	constructor() {
 		document.querySelector("#loginBtn").onclick = (event) => {
@@ -434,6 +503,27 @@ rhit.main = function () {
 		rhit.fbSingleExpenseManager = new rhit.FbSingleExpenseManager();
 
 		new rhit.FbExpenseAddController();
+	}
+	if(document.querySelector("#expenseEditPage")){
+		console.log("you are on the expenseEdit page");
+
+		const queryString = window.location.search;
+		console.log(queryString);
+		const urlParams = new URLSearchParams(queryString);
+		const expenseId = urlParams.get("id");
+
+		console.log(`Detail page for ${expenseId}`);
+
+		if(!expenseId){
+			console.log("ERROR!!! MISSING MOVIE QUOTE ID");
+			window.location.href = "/";
+		}
+
+
+
+		rhit.fbExpenseChangeManager = new rhit.FbExpenseChangeManager(expenseId);
+		//new rhit.DetailPageController();
+		new rhit.ExpenseChangePageController();
 	}
 
 	
