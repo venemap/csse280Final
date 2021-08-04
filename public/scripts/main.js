@@ -418,13 +418,15 @@ rhit.AuthManager = class {
 rhit.checkForRedirects = function(){
 	console.log("checking for redirects");
 	if(document.querySelector("#login") && rhit.fbAuthManager.isSignedIn){
+
+		console.log("redirecting to main");
 		window.location.href = "/main.html";
-		$('#myModal').modal('show');
+
 	}
 
 	if(!document.querySelector("#login") && !rhit.fbAuthManager.isSignedIn){
 		console.log("not logged in and on main site");
-		window.location.href = "/";
+		window.location.href = "/login.html";
 	}
 
 }
@@ -461,14 +463,16 @@ rhit.main = function () {
 		console.log("We are listening now. Using AuthManager.");
 		console.log("isSigned: ", rhit.fbAuthManager.isSignedIn);
 
+		rhit.checkForRedirects();
+
+		rhit.initializePage();
+
 		if(document.querySelector(".sidebar")){
 			console.log("sidebar is presetn");
 			document.querySelector("#greetUser").innerHTML = `Hello, ${rhit.fbAuthManager.uid}`;
 		}	
 
-		rhit.checkForRedirects();
-
-		rhit.initializePage();
+		
 	});
 
 	if(document.querySelector("#loginPage")){
