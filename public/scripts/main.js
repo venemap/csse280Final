@@ -75,7 +75,7 @@ rhit.BudgetListPageController = class {
 			newBudget.onclick = (event) => {
 				console.log(`You clicked on ${budget.id}`);
 
-				// window.location.href = "/budget"
+				window.location.href = `/budgetEdit.html?id=${budget.id}`
 			}
 
 			newList.appendChild(newBudget);
@@ -147,8 +147,19 @@ rhit.ExpenseListPageController = class {
 	}
 
 	_createExpense(expense) {
+		let category = expense.category;
+		let amount = expense.amount;
+		let date = null;
+		if (expense.date) {
+			date = expense.date;
+		}
+		else {
+			//date = Date.now();
+			date = firebase.firestore.Timestamp.now();
+			console.log("DATE FOR EXPENSE DNE");
+		}
 		return htmlToElement(`<div id="ExpenseOverview-Label">
-		<span>${expense.category} $ ${expense.amount}</span><span class="expenseDate">${expense.date.toDate().getMonth()}/${expense.date.toDate().getDay()}/${expense.date.toDate().getFullYear()}</span>
+		<span>${category} $ ${amount}</span><span class="expenseDate">${date.toDate().getMonth()}/${date.toDate().getDay()}/${date.toDate().getFullYear()}</span>
   
 		<span class="dropdown pull-xs-right budget-option-menu">
 		  <button class="btn bmd-btn-icon dropdown-toggle" type="button" id="lr1" data-toggle="dropdown">
@@ -176,6 +187,8 @@ rhit.ExpenseListPageController = class {
 
 			newExpense.onclick = (event) => {
 				console.log(`you clicked on ${exp.id}`);
+
+				window.location.href = `/expenseEdit.html?id=${exp.id}`;
 			}
 
 			newList.appendChild(newExpense);
@@ -230,6 +243,43 @@ rhit.FbExpenseManager = class {
 	}
 
 
+}
+
+rhit.FbSingleExpenseManager = class {
+	constructor() {
+		this._documentSnapshots = [];
+		this._ref = firebase.firestore().collection(rhit.FB_EXPENSE_COLLECTION);
+		this._unsubscribe = null;
+	}
+	add(amount, category) {
+		console.log(amount, category);
+
+		this._ref.add({
+			[rhit.FB_KEY_AMOUNT]: amount,
+			[rhit.FB_KEY_CATEGORY]: category,
+			//[rhit.FB_KEY_DATE]: firebase.firestore.Timetamp.now(),
+		})
+		.then(function (docRef) {
+			console.log("document written with id: ", docRef);
+		})
+		.catch(function(error) {
+			console.error("Error adding to document: ", error);
+		})
+	}
+}
+
+rhit.FbExpenseAddController = class {
+	constructor() {
+		document.querySelector("#submitAddExpense").onclick = (event) => {
+			const amount = document.querySelector("#addExpenseAmount").value;
+			const category = document.querySelector("#addExpenseCategory").value;
+			const date = document.querySelector("#addExpenseDate").value;
+
+			console.log(amount, category, date);
+
+			rhit.fbSingleExpenseManager.add(amount, category);
+		} 
+	}
 }
 
 rhit.LoginPageController = class {
@@ -376,6 +426,14 @@ rhit.main = function () {
 		rhit.fbExpenseManager = new rhit.FbExpenseManager();
 
 		new rhit.ExpenseListPageController();
+	}
+
+	if(document.querySelector("#expenseCreationPage")) {
+		console.log("you are on the expense creation page");
+
+		rhit.fbSingleExpenseManager = new rhit.FbSingleExpenseManager();
+
+		new rhit.FbExpenseAddController();
 	}
 
 	
