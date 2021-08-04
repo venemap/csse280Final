@@ -312,7 +312,8 @@ rhit.FbExpenseChangeManager = class {
 		console.log("update quote");
 
 		this._ref.update({
-
+			[rhit.FB_KEY_AMOUNT]: amount, 
+			[rhit.FB_KEY_CATEGORY]: category, 
 		})
 		.then(() => {
 			console.log("document succesfully updated");
@@ -338,6 +339,12 @@ rhit.FbExpenseChangeManager = class {
 rhit.ExpenseChangePageController = class {
 	constructor() {
 		console.log("made expenseChangePageController");
+
+		document.querySelector("#submitEditExpense").onclick = (event) => {
+			const amount = document.querySelector("#editExpenseAmount").value;
+			const category = document.querySelector("#editExpenseCategory").value;
+			rhit.fbExpenseChangeManager.update(amount, category);
+		}
 
 		rhit.fbExpenseChangeManager.beginListening(this.updateView.bind(this));
 	}
