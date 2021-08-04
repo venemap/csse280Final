@@ -90,7 +90,6 @@ rhit.BudgetListPageController = class {
 
 	}
 
-
 }
 
 rhit.FbBudgetManager = class {
@@ -294,6 +293,7 @@ rhit.checkForRedirects = function(){
 	console.log("checking for redirects");
 	if(document.querySelector("#login") && rhit.fbAuthManager.isSignedIn){
 		window.location.href = "/main.html";
+		$('#myModal').modal('show');
 	}
 
 	if(!document.querySelector("#login") && !rhit.fbAuthManager.isSignedIn){
