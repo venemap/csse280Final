@@ -17,8 +17,22 @@ body {
     width: 50%;
 }
 
+#login{
+    padding-top: 25px;
+}
+
 .login-buttons{
     float: right;
+}
+
+#loginBtn{
+    display: block;
+    margin: 60px auto;
+    color: white;
+    background: #800000;
+    font-size: 1.1em;
+    padding: 10px 30px;
+    border-radius: 5px;
 }
 
 .navbar {
