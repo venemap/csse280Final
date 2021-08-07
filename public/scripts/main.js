@@ -217,9 +217,15 @@ rhit.FbExpenseManager = class {
 		this._ref = firebase.firestore().collection(rhit.FB_EXPENSE_COLLECTION);
 		this._unsubscribe = null;
 		this._uid = uid;
+
+		// rhit.fbBudgetManager.beginListening(this.updateList.bind(this));
+		// rhit.fbSingleExpenseManager.beginListening(this.updateList.bind(this));
+
+
 	}
 
 	beginListening(changeListener) {
+		console.log("beginning to listen for budgets to fill dropdown");
 		let query = this._ref.limit(30);
 
 		if(this._uid) {
@@ -263,7 +269,9 @@ rhit.FbExpenseManager = class {
 rhit.FbSingleExpenseManager = class {
 	constructor(uid) {
 		this._documentSnapshots = [];
+		this._budgetSnapshots = [];
 		this._ref = firebase.firestore().collection(rhit.FB_EXPENSE_COLLECTION);
+		this._budgetRef = firebase.firestore().collection(rhit.FB_BUDGET_COLLECTION);
 		this._unsubscribe = null;
 		this._uid = uid;
 
@@ -285,6 +293,56 @@ rhit.FbSingleExpenseManager = class {
 				console.error("Error adding to document: ", error);
 			})
 	}
+
+
+	beginListening(changeListener) {
+		let query = this._ref.limit(30);
+
+		if(this._uid) {
+			query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
+		}
+
+		this._unsubscribe = query.onSnapshot((querySnapshot) => {
+			console.log("expensemanager update");
+
+			this._documentSnapshots = querySnapshot.docs;
+
+			querySnapshot.forEach((doc) => {
+				console.log(doc.data());
+			});
+
+			changeListener();
+		});
+
+		query = this._budgetRef.limit(30);
+
+		if(this._uid) {
+			query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
+		}
+
+		this._unsubscribe = query.onSnapshot((querySnapshot) => {
+			this._budgetSnapshots = querySnapshot.docs;
+
+			querySnapshot.forEach((doc) => {
+				console.log(doc.data);
+			})
+			changeListener();
+		})
+	}
+
+	get budgetLength() {
+		return this._budgetSnapshots.length;
+	}
+
+	getBudgetAtIndex(index) {
+		const docSnapshot = this._budgetSnapshots[index];
+		const budget = new rhit.Budget(
+			docSnapshot.id,
+			docSnapshot.get(rhit.FB_KEY_CATEGORY),
+			docSnapshot.get(rhit.FB_KEY_AMOUNT),
+		)
+		return budget;
+	}
 }
 
 rhit.FbExpenseAddController = class {
@@ -305,6 +363,41 @@ rhit.FbExpenseAddController = class {
 
 			rhit.fbSingleExpenseManager.add(amount, category, date);
 		}
+		rhit.fbSingleExpenseManager.beginListening(this.updateList.bind(this));
+	}
+	_createBudgetDropdown(budget) {
+		let category = budget.category;
+		let amount = budget.amount;
+
+		return htmlToElement(`<option value="${category}">${category}</option>`);
+	}
+
+	updateList() {
+		console.log("I need to update the dropdown on the expense page");
+		console.log(`Num budgets = ${rhit.fbSingleExpenseManager.budgetLength}`);
+		console.log(`Example expense = `, rhit.fbSingleExpenseManager.getBudgetAtIndex(0));
+
+		const newList = htmlToElement(`<select name="budgets" id="budgets"></select>`);
+
+		for (let i = 0; i < rhit.fbSingleExpenseManager.budgetLength; i++) {
+			const budget = rhit.fbSingleExpenseManager.getBudgetAtIndex(i);
+			const newbudgetDropdown = this._createBudgetDropdown(budget);
+
+			newbudgetDropdown.onclick = (event) => {
+				console.log(`you clicked on ${budget.id}`);
+
+				// window.location.href = `/expenseEdit.html?id=${exp.id}`;
+			}
+
+			newList.appendChild(newbudgetDropdown);
+		}
+
+		const oldList = document.querySelector("#budgets");
+		oldList.removeAttribute("id");
+
+		oldList.hidden = true;
+
+		oldList.parentElement.appendChild(newList);
 	}
 }
 
