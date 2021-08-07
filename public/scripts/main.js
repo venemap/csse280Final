@@ -343,7 +343,7 @@ rhit.ExpenseChangePageController = class {
 		document.querySelector("#submitEditExpense").onclick = (event) => {
 			const amount = document.querySelector("#editExpenseAmount").value;
 			const category = document.querySelector("#editExpenseCategory").value;
-			rhit.fbExpenseChangeManager.update(amount, category);
+			rhit.fbExpenseChanexpenseHistory.htmlgeManager.update(amount, category);
 		}
 
 		rhit.fbExpenseChangeManager.beginListening(this.updateView.bind(this));
@@ -419,8 +419,18 @@ rhit.checkForRedirects = function(){
 	console.log("checking for redirects");
 	if(document.querySelector("#login") && rhit.fbAuthManager.isSignedIn){
 
-		console.log("redirecting to main");
+
 		window.location.href = "/main.html";
+
+
+		$(document).ready( function () {
+			$('#myModal').modal('show');
+		  });
+		  console.log("redirecting to main");
+		window.onload = function() {
+			$('#myModal').modal('show');
+		  };
+
 
 	}
 
@@ -440,6 +450,13 @@ rhit.initializePage = function(){
 		//rhit.fbMovieQuoteManager = new rhit.FbMovieQuotesManager(uid);
 		// rhit.MainPageController();
 	}
+
+
+		if(document.querySelector("#mainPage")){
+			$('#myModal').modal('show');
+		}
+
+
 
 	//if(document.querySelector("#")){}
 }
