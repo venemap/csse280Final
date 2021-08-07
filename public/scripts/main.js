@@ -33,7 +33,7 @@ rhit.Budget = class {
 rhit.BudgetListPageController = class {
 	constructor() {
 		rhit.fbBudgetManager.beginListening(this.updateList.bind(this));
-		
+
 		// if(document.querySelector("#logoutClick")) {
 		// 	document.querySelector("#logoutClick").onclick = (event) => {
 		// 		console.log("sign out");
@@ -59,7 +59,7 @@ rhit.BudgetListPageController = class {
 	  	</div>
 	  <br>`)
 	}
-	
+
 	updateList() {
 		console.log("update the page for budgets");
 
@@ -81,7 +81,7 @@ rhit.BudgetListPageController = class {
 
 			newList.appendChild(newBudget);
 
-			
+
 		}
 		const oldBudget = document.querySelector("#BudgetOverview-Label");
 		oldBudget.removeAttribute("id");
@@ -118,14 +118,14 @@ rhit.FbBudgetManager = class {
 		this._unsubscribe();
 	}
 
-	get length  () {
+	get length() {
 		return this._documentSnapshots.length;
 	}
 
 	getBudgetAtIndex(index) {
 		const docSnapshot = this._documentSnapshots[index];
 		const budget = new rhit.Budget(
-			docSnapshot.id, 
+			docSnapshot.id,
 			docSnapshot.get(rhit.FB_KEY_CATEGORY),
 			docSnapshot.get(rhit.FB_KEY_AMOUNT),
 		);
@@ -137,7 +137,7 @@ rhit.Expense = class {
 	constructor(id, category, amount, date) {
 		this.id = id;
 		this.category = category;
-		this.amount = amount; 
+		this.amount = amount;
 		this.date = date;
 	}
 }
@@ -153,8 +153,7 @@ rhit.ExpenseListPageController = class {
 		let date = null;
 		if (expense.date) {
 			date = expense.date;
-		}
-		else {
+		} else {
 			//date = Date.now();
 			date = firebase.firestore.Timestamp.now();
 			console.log("DATE FOR EXPENSE DNE");
@@ -175,14 +174,14 @@ rhit.ExpenseListPageController = class {
 	  <br>`);
 	}
 
-	updateList(){
+	updateList() {
 		console.log("I need to update the list of the expense page");
 		console.log(`Num expenses = ${rhit.fbExpenseManager.length}`);
 		console.log(`Example expense = `, rhit.fbExpenseManager.getExpenseAtIndex(0));
 
 		const newList = htmlToElement(`<div id="wrapper-expenses"></div>`);
 
-		for(let i = 0; i < rhit.fbExpenseManager.length; i++) {
+		for (let i = 0; i < rhit.fbExpenseManager.length; i++) {
 			const exp = rhit.fbExpenseManager.getExpenseAtIndex(i);
 			const newExpense = this._createExpense(exp);
 
@@ -221,7 +220,7 @@ rhit.FbExpenseManager = class {
 				console.log(doc.data());
 			});
 
-		changeListener();
+			changeListener();
 		});
 	}
 
@@ -256,16 +255,16 @@ rhit.FbSingleExpenseManager = class {
 		console.log(amount, category);
 
 		this._ref.add({
-			[rhit.FB_KEY_AMOUNT]: amount,
-			[rhit.FB_KEY_CATEGORY]: category,
-			//[rhit.FB_KEY_DATE]: firebase.firestore.Timetamp.now(),
-		})
-		.then(function (docRef) {
-			console.log("document written with id: ", docRef);
-		})
-		.catch(function(error) {
-			console.error("Error adding to document: ", error);
-		})
+				[rhit.FB_KEY_AMOUNT]: amount,
+				[rhit.FB_KEY_CATEGORY]: category,
+				//[rhit.FB_KEY_DATE]: firebase.firestore.Timetamp.now(),
+			})
+			.then(function (docRef) {
+				console.log("document written with id: ", docRef);
+			})
+			.catch(function (error) {
+				console.error("Error adding to document: ", error);
+			})
 	}
 }
 
@@ -279,7 +278,7 @@ rhit.FbExpenseAddController = class {
 			console.log(amount, category, date);
 
 			rhit.fbSingleExpenseManager.add(amount, category);
-		} 
+		}
 	}
 }
 
@@ -294,7 +293,7 @@ rhit.FbExpenseChangeManager = class {
 
 	beginListening(changeListener) {
 		this._ref.onSnapshot((doc) => {
-			if(doc.exists) {
+			if (doc.exists) {
 				console.log("Docuemnt data: ", doc.data());
 				this._documentSnapshot = doc;
 				changeListener();
@@ -312,15 +311,15 @@ rhit.FbExpenseChangeManager = class {
 		console.log("update quote");
 
 		this._ref.update({
-			[rhit.FB_KEY_AMOUNT]: amount, 
-			[rhit.FB_KEY_CATEGORY]: category, 
-		})
-		.then(() => {
-			console.log("document succesfully updated");
-		})
-		.catch(function(error) {
-			console.error("Error updating document: ", error);
-		})
+				[rhit.FB_KEY_AMOUNT]: amount,
+				[rhit.FB_KEY_CATEGORY]: category,
+			})
+			.then(() => {
+				console.log("document succesfully updated");
+			})
+			.catch(function (error) {
+				console.error("Error updating document: ", error);
+			})
 	}
 
 	get amount() {
@@ -363,7 +362,33 @@ rhit.LoginPageController = class {
 		document.querySelector("#loginBtn").onclick = (event) => {
 			rhit.fbAuthManager.signIn();
 		};
+
+		rhit.startFireBaseUI();
 	}
+}
+
+rhit.startFireBaseUI = function () {
+	// FirebaseUI config.
+	var uiConfig = {
+		signInSuccessUrl: '/main.html',
+		signInOptions: [
+			// Leave the lines as is for the providers you want to offer your users.
+			firebase.auth.GoogleAuthProvider.PROVIDER_ID
+		],
+		// tosUrl and privacyPolicyUrl accept either url string or a callback
+		// function.
+		// Terms of service url/callback.
+		tosUrl: '<your-tos-url>',
+		// Privacy policy url/callback.
+		privacyPolicyUrl: function () {
+			window.location.assign('<your-privacy-policy-url>');
+		}
+	};
+
+	// Initialize the FirebaseUI Widget using Firebase.
+	var ui = new firebaseui.auth.AuthUI(firebase.auth());
+	// The start method will wait until the DOM is loaded.
+	ui.start('#firebaseui-auth-container', uiConfig);
 }
 
 rhit.AuthManager = class {
@@ -415,9 +440,9 @@ rhit.AuthManager = class {
 	}
 }
 
-rhit.checkForRedirects = function(){
+rhit.checkForRedirects = function () {
 	console.log("checking for redirects");
-	if(document.querySelector("#login") && rhit.fbAuthManager.isSignedIn){
+	if (document.querySelector("#login") && rhit.fbAuthManager.isSignedIn) {
 
 
 		window.location.href = "/main.html";
@@ -434,16 +459,16 @@ rhit.checkForRedirects = function(){
 
 	}
 
-	if(!document.querySelector("#login") && !rhit.fbAuthManager.isSignedIn){
+	if (!document.querySelector("#login") && !rhit.fbAuthManager.isSignedIn) {
 		console.log("not logged in and on main site");
 		window.location.href = "/login.html";
 	}
 
 }
 
-rhit.initializePage = function(){
+rhit.initializePage = function () {
 	const urlParams = new URLSearchParams(window.location.search);
-	if(document.querySelector("#login")){
+	if (document.querySelector("#login")) {
 		console.log("You are on the login page");
 		//rhit.fbMovieQuoteManager = new rhit.FbMovieQuotesManager();
 		const uid = urlParams.get("uid");
@@ -466,7 +491,7 @@ rhit.initializePage = function(){
 rhit.main = function () {
 	console.log("Ready");
 
-	if(document.querySelector("#logoutClick")) {
+	if (document.querySelector("#logoutClick")) {
 		document.querySelector("#logoutClick").onclick = (event) => {
 			console.log("sign out");
 			rhit.fbAuthManager.signOut();
@@ -484,15 +509,15 @@ rhit.main = function () {
 
 		rhit.initializePage();
 
-		if(document.querySelector(".sidebar")){
+		if (document.querySelector(".sidebar")) {
 			console.log("sidebar is presetn");
 			document.querySelector("#greetUser").innerHTML = `Hello, ${rhit.fbAuthManager.uid}`;
-		}	
+		}
 
-		
+
 	});
 
-	if(document.querySelector("#loginPage")){
+	if (document.querySelector("#loginPage")) {
 		new rhit.LoginPageController();
 	}
 
@@ -510,7 +535,7 @@ rhit.main = function () {
 
 	}
 
-	if(document.querySelector("#budgetOverviewPage")) {
+	if (document.querySelector("#budgetOverviewPage")) {
 		console.log("you are on the budget list page");
 
 		rhit.fbBudgetManager = new rhit.FbBudgetManager();
@@ -518,21 +543,21 @@ rhit.main = function () {
 		new rhit.BudgetListPageController();
 	}
 
-	if(document.querySelector("#expensePage")) {
+	if (document.querySelector("#expensePage")) {
 		console.log("you are on the expense page");
 		rhit.fbExpenseManager = new rhit.FbExpenseManager();
 
 		new rhit.ExpenseListPageController();
 	}
 
-	if(document.querySelector("#expenseCreationPage")) {
+	if (document.querySelector("#expenseCreationPage")) {
 		console.log("you are on the expense creation page");
 
 		rhit.fbSingleExpenseManager = new rhit.FbSingleExpenseManager();
 
 		new rhit.FbExpenseAddController();
 	}
-	if(document.querySelector("#expenseEditPage")){
+	if (document.querySelector("#expenseEditPage")) {
 		console.log("you are on the expenseEdit page");
 
 		const queryString = window.location.search;
@@ -542,7 +567,7 @@ rhit.main = function () {
 
 		console.log(`Detail page for ${expenseId}`);
 
-		if(!expenseId){
+		if (!expenseId) {
 			console.log("ERROR!!! MISSING MOVIE QUOTE ID");
 			window.location.href = "/";
 		}
@@ -554,7 +579,7 @@ rhit.main = function () {
 		new rhit.ExpenseChangePageController();
 	}
 
-	
+
 
 
 
