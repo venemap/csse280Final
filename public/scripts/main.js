@@ -9,6 +9,7 @@ rhit.FB_KEY_CATEGORY = "Category";
 rhit.FB_EXPENSE_COLLECTION = "Expenses";
 rhit.FB_KEY_DATE = "Date";
 rhit.FB_KEY_AUTHOR = "Author";
+rhit.FB_KEY_BUDGETID = "BudgetName"
 rhit.fbExpenseChangeManager = null;
 rhit.fbBudgetManager = null;
 rhit.fbSingleBudgetManager = null;
@@ -43,10 +44,10 @@ rhit.BudgetListPageController = class {
 		// }
 	}
 
-	_createBudget(budget) {
+	_createBudget(budget, total) {
 		return htmlToElement(`
 		<div id="BudgetOverview-Label">
-			<span>${budget.category}: $ XXX/${budget.amount}</span>
+			<span>${budget.category}: $${total}/${budget.amount}</span>
   
 			<span class="dropdown pull-xs-right budget-option-menu">
 				<button class="btn bmd-btn-icon dropdown-toggle" type="button" id="lr1" data-toggle="dropdown">
@@ -69,10 +70,23 @@ rhit.BudgetListPageController = class {
 
 		const newList = htmlToElement('<div id="BudgetOverview-Label"></div>')
 
+		let total = 0;
+
 		for (let i = 0; i < rhit.fbBudgetManager.length; i++) {
 			const budget = rhit.fbBudgetManager.getBudgetAtIndex(i);
+			console.log("printing all expenses");
+			total = 0;
+			for (let j = 0; j < rhit.fbBudgetManager.expenseLength; j++) {
+				const expense = rhit.fbBudgetManager.getExpenseAtIndex(j);
+				if (expense.budgetName == budget.category){
+					console.log(expense, budget);
+					total += parseInt(expense.amount);
+				}
+				
 
-			const newBudget = this._createBudget(budget);
+			}
+
+			const newBudget = this._createBudget(budget, total);
 
 			newBudget.onclick = (event) => {
 				console.log(`You clicked on ${budget.id}`);
@@ -84,6 +98,7 @@ rhit.BudgetListPageController = class {
 
 
 		}
+		
 		const oldBudget = document.querySelector("#BudgetOverview-Label");
 		oldBudget.removeAttribute("id");
 
@@ -97,7 +112,9 @@ rhit.BudgetListPageController = class {
 rhit.FbBudgetManager = class {
 	constructor(uid) {
 		this._documentSnapshots = [];
+		this._expenseSnapshots = [];
 		this._ref = firebase.firestore().collection(rhit.FB_BUDGET_COLLECTION);
+		this._expenseRef = firebase.firestore().collection(rhit.FB_EXPENSE_COLLECTION);
 		this._unsubscribe = null;
 		this._uid = uid;
 	}
@@ -120,6 +137,20 @@ rhit.FbBudgetManager = class {
 
 			changeListener();
 		})
+
+		query = this._expenseRef.limit(30);
+		if(this._uid) {
+			query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
+		}
+		this._unsubscribe = query.onSnapshot((querySnapshot) => {
+			this._expenseSnapshots = querySnapshot.docs;
+
+			querySnapshot.forEach((doc) => {
+				console.log(doc.data);
+			})
+			changeListener();
+		})
+		
 	}
 
 	stopListening() {
@@ -139,14 +170,31 @@ rhit.FbBudgetManager = class {
 		);
 		return budget;
 	}
+
+	get expenseLength() {
+		return this._expenseSnapshots.length;
+	}
+
+	getExpenseAtIndex(index) {
+		const docSnapshot = this._expenseSnapshots[index];
+		const exp = new rhit.Expense(
+			docSnapshot.id,
+			docSnapshot.get(rhit.FB_KEY_CATEGORY),
+			docSnapshot.get(rhit.FB_KEY_AMOUNT),
+			docSnapshot.get(rhit.FB_KEY_DATE),
+			docSnapshot.get(rhit.FB_KEY_BUDGETID),
+		);
+		return exp;
+	}
 }
 
 rhit.Expense = class {
-	constructor(id, category, amount, date) {
+	constructor(id, category, amount, date, budgetName) {
 		this.id = id;
 		this.category = category;
 		this.amount = amount;
 		this.date = date;
+		this.budgetName = budgetName;
 	}
 }
 
@@ -218,10 +266,6 @@ rhit.FbExpenseManager = class {
 		this._unsubscribe = null;
 		this._uid = uid;
 
-		// rhit.fbBudgetManager.beginListening(this.updateList.bind(this));
-		// rhit.fbSingleExpenseManager.beginListening(this.updateList.bind(this));
-
-
 	}
 
 	beginListening(changeListener) {
@@ -259,6 +303,7 @@ rhit.FbExpenseManager = class {
 			docSnapshot.get(rhit.FB_KEY_CATEGORY),
 			docSnapshot.get(rhit.FB_KEY_AMOUNT),
 			docSnapshot.get(rhit.FB_KEY_DATE),
+			docSnapshot.get(rhit.FB_KEY_BUDGETID),
 		);
 		return exp;
 	}
@@ -277,14 +322,15 @@ rhit.FbSingleExpenseManager = class {
 
 		console.log(`making single expense manager for ${this._uid}`);
 	}
-	add(amount, category, date) {
-		console.log(amount, category, date);
+	add(amount, category, date, budgetName) {
+		console.log(amount, category, date, budgetName);
 
 		this._ref.add({
 				[rhit.FB_KEY_AMOUNT]: amount,
 				[rhit.FB_KEY_CATEGORY]: category,
 				[rhit.FB_KEY_AUTHOR]: rhit.fbAuthManager.uid,
 				[rhit.FB_KEY_DATE]: date,
+				[rhit.FB_KEY_BUDGETID]: budgetName,
 			})
 			.then(function (docRef) {
 				console.log("document written with id: ", docRef);
@@ -350,6 +396,7 @@ rhit.FbExpenseAddController = class {
 		document.querySelector("#submitAddExpense").onclick = (event) => {
 			const amount = document.querySelector("#addExpenseAmount").value;
 			const category = document.querySelector("#addExpenseCategory").value;
+			const budgetName = document.querySelector("#budgets").value;
 			let date = new Date(document.querySelector("#addExpenseDate").value);
 
 			console.log(date);
@@ -361,14 +408,14 @@ rhit.FbExpenseAddController = class {
 			console.log(date);
 
 
-			rhit.fbSingleExpenseManager.add(amount, category, date);
+			rhit.fbSingleExpenseManager.add(amount, category, date, budgetName);
 		}
 		rhit.fbSingleExpenseManager.beginListening(this.updateList.bind(this));
 	}
 
 	_createBudgetDropdown(budget) {
 		if(!budget){
-			return htmlToElement(`<option value="no_budget">No Budget</option>`);
+			return htmlToElement(`<option value="">No Budget</option>`);
 		}
 		let category = budget.category;
 		let amount = budget.amount;
