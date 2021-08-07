@@ -485,8 +485,11 @@ rhit.FbBudgetController = class {
 			const amount = document.querySelector("#addBudgetAmount").value;
 			const category = document.querySelector("#addBudgetCategory").value;
 
+			if(amount != "" && category != ""){
+				rhit.fbSingleBudgetManager.add(amount, category);
 
-			rhit.fbSingleBudgetManager.add(amount, category);
+				window.location.href = "budgetOverview.html";
+			}
 		}
 	}
 }
