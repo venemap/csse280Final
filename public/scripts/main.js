@@ -6,8 +6,9 @@ rhit.variableName = "";
 rhit.FB_BUDGET_COLLECTION = "Budget"
 rhit.FB_KEY_AMOUNT = "Amount";
 rhit.FB_KEY_CATEGORY = "Category";
-rhit.FB_EXPENSE_COLLECTION = "Expenses"
-rhit.FB_KEY_DATE = "Date"
+rhit.FB_EXPENSE_COLLECTION = "Expenses";
+rhit.FB_KEY_DATE = "Date";
+rhit.FB_KEY_AUTHOR = "Author";
 rhit.fbExpenseChangeManager = null;
 rhit.fbBudgetManager = null;
 rhit.fbSingleBudgetManager = null;
@@ -94,14 +95,21 @@ rhit.BudgetListPageController = class {
 }
 
 rhit.FbBudgetManager = class {
-	constructor() {
+	constructor(uid) {
 		this._documentSnapshots = [];
 		this._ref = firebase.firestore().collection(rhit.FB_BUDGET_COLLECTION);
 		this._unsubscribe = null;
+		this._uid = uid;
 	}
 
 	beginListening(changeListener) {
-		this._unsubscribe = this._ref.limit(30).onSnapshot((querySnapshot) => {
+		let query = this._ref.limit(30);
+
+		if(this._uid) {
+			query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
+		}
+
+		this._unsubscribe = query.onSnapshot((querySnapshot) => {
 			console.log("Budget page Update");
 
 			this._documentSnapshots = querySnapshot.docs;
@@ -204,14 +212,21 @@ rhit.ExpenseListPageController = class {
 }
 
 rhit.FbExpenseManager = class {
-	constructor() {
+	constructor(uid) {
 		this._documentSnapshots = [];
 		this._ref = firebase.firestore().collection(rhit.FB_EXPENSE_COLLECTION);
 		this._unsubscribe = null;
+		this._uid = uid;
 	}
 
 	beginListening(changeListener) {
-		this._unsubscribe = this._ref.limit(30).onSnapshot((querySnapshot) => {
+		let query = this._ref.limit(30);
+
+		if(this._uid) {
+			query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
+		}
+
+		this._unsubscribe = query.onSnapshot((querySnapshot) => {
 			console.log("expensemanager update");
 
 			this._documentSnapshots = querySnapshot.docs;
@@ -246,18 +261,22 @@ rhit.FbExpenseManager = class {
 }
 
 rhit.FbSingleExpenseManager = class {
-	constructor() {
+	constructor(uid) {
 		this._documentSnapshots = [];
 		this._ref = firebase.firestore().collection(rhit.FB_EXPENSE_COLLECTION);
 		this._unsubscribe = null;
+		this._uid = uid;
+
+		console.log(`making single expense manager for ${this._uid}`);
 	}
-	add(amount, category) {
-		console.log(amount, category);
+	add(amount, category, date) {
+		console.log(amount, category, date);
 
 		this._ref.add({
 				[rhit.FB_KEY_AMOUNT]: amount,
 				[rhit.FB_KEY_CATEGORY]: category,
-				//[rhit.FB_KEY_DATE]: firebase.firestore.Timetamp.now(),
+				[rhit.FB_KEY_AUTHOR]: rhit.fbAuthManager.uid,
+				[rhit.FB_KEY_DATE]: date,
 			})
 			.then(function (docRef) {
 				console.log("document written with id: ", docRef);
@@ -273,11 +292,56 @@ rhit.FbExpenseAddController = class {
 		document.querySelector("#submitAddExpense").onclick = (event) => {
 			const amount = document.querySelector("#addExpenseAmount").value;
 			const category = document.querySelector("#addExpenseCategory").value;
-			const date = document.querySelector("#addExpenseDate").value;
+			let date = new Date(document.querySelector("#addExpenseDate").value);
 
-			console.log(amount, category, date);
+			console.log(date);
+			console.log(date.getTime() * 0.001);
 
-			rhit.fbSingleExpenseManager.add(amount, category);
+			date = date.getTime() * 0.001;
+			date = new firebase.firestore.Timestamp(date, 0);
+
+			console.log(date);
+
+
+			rhit.fbSingleExpenseManager.add(amount, category, date);
+		}
+	}
+}
+
+rhit.FbSingleBudgetManager = class {
+	constructor(uid) {
+		this._documentSnapshots = [];
+		this._ref = firebase.firestore().collection(rhit.FB_BUDGET_COLLECTION);
+		this._unsubscribe = null;
+		this._uid = uid;
+
+		console.log(`making single budget manager for ${this._uid}`);
+	}
+	add(amount, category) {
+		console.log(amount, category);
+
+		this._ref.add({
+				[rhit.FB_KEY_AMOUNT]: amount,
+				[rhit.FB_KEY_CATEGORY]: category,
+				[rhit.FB_KEY_AUTHOR]: rhit.fbAuthManager.uid,
+			})
+			.then(function (docRef) {
+				console.log("document written with id: ", docRef);
+			})
+			.catch(function (error) {
+				console.error("Error adding to document: ", error);
+			})
+	}
+}
+
+rhit.FbBudgetController = class {
+	constructor() {
+		document.querySelector("#submitAddBudget").onclick = (event) => {
+			const amount = document.querySelector("#addBudgetAmount").value;
+			const category = document.querySelector("#addBudgetCategory").value;
+
+
+			rhit.fbSingleBudgetManager.add(amount, category);
 		}
 	}
 }
@@ -468,57 +532,14 @@ rhit.checkForRedirects = function () {
 
 rhit.initializePage = function () {
 	const urlParams = new URLSearchParams(window.location.search);
-	if (document.querySelector("#login")) {
-		console.log("You are on the login page");
-		//rhit.fbMovieQuoteManager = new rhit.FbMovieQuotesManager();
-		const uid = urlParams.get("uid");
-		//rhit.fbMovieQuoteManager = new rhit.FbMovieQuotesManager(uid);
-		// rhit.MainPageController();
-	}
-
-
-		if(document.querySelector("#mainPage")){
-			$('#myModal').modal('show');
-		}
-
-
-
-	//if(document.querySelector("#")){}
-}
-
-/* Main */
-/** function and class syntax examples */
-rhit.main = function () {
-	console.log("Ready");
-
-	if (document.querySelector("#logoutClick")) {
-		document.querySelector("#logoutClick").onclick = (event) => {
-			console.log("sign out");
-			rhit.fbAuthManager.signOut();
-		}
-	}
-
-
-	console.log("making new authmanager");
-	rhit.fbAuthManager = new rhit.AuthManager();
-	rhit.fbAuthManager.beginListening((event) => {
-		console.log("We are listening now. Using AuthManager.");
-		console.log("isSigned: ", rhit.fbAuthManager.isSignedIn);
-
-		rhit.checkForRedirects();
-
-		rhit.initializePage();
-
-		if (document.querySelector(".sidebar")) {
-			console.log("sidebar is presetn");
-			document.querySelector("#greetUser").innerHTML = `Hello, ${rhit.fbAuthManager.uid}`;
-		}
-
-
-	});
-
+	
 	if (document.querySelector("#loginPage")) {
 		new rhit.LoginPageController();
+	}
+
+	if (document.querySelector(".sidebar")) {
+		console.log("sidebar is presetn");
+		document.querySelector("#greetUser").innerHTML = `Hello, ${rhit.fbAuthManager.uid}`;
 	}
 
 	// only run js for sidemenu if it exists on the page
@@ -538,25 +559,33 @@ rhit.main = function () {
 	if (document.querySelector("#budgetOverviewPage")) {
 		console.log("you are on the budget list page");
 
-		rhit.fbBudgetManager = new rhit.FbBudgetManager();
+		rhit.fbBudgetManager = new rhit.FbBudgetManager(this.fbAuthManager.uid);
 
 		new rhit.BudgetListPageController();
 	}
 
 	if (document.querySelector("#expensePage")) {
 		console.log("you are on the expense page");
-		rhit.fbExpenseManager = new rhit.FbExpenseManager();
+		rhit.fbExpenseManager = new rhit.FbExpenseManager(rhit.fbAuthManager.uid);
 
 		new rhit.ExpenseListPageController();
 	}
 
 	if (document.querySelector("#expenseCreationPage")) {
 		console.log("you are on the expense creation page");
-
-		rhit.fbSingleExpenseManager = new rhit.FbSingleExpenseManager();
+		rhit.fbSingleExpenseManager = new rhit.FbSingleExpenseManager(rhit.fbAuthManager.uid);
 
 		new rhit.FbExpenseAddController();
 	}
+
+	if (document.querySelector("#budgetCreationPage")) {
+		console.log("you are on the budget creation page");
+
+		rhit.fbSingleBudgetManager = new rhit.FbSingleBudgetManager(rhit.fbAuthManager.uid);
+
+		new rhit.FbBudgetController();
+	}
+
 	if (document.querySelector("#expenseEditPage")) {
 		console.log("you are on the expenseEdit page");
 
@@ -578,6 +607,49 @@ rhit.main = function () {
 		//new rhit.DetailPageController();
 		new rhit.ExpenseChangePageController();
 	}
+
+	if(document.querySelector("#mainPage")){
+		$('#myModal').modal('show');
+		document.querySelector("#expenseCreation").onclick = (event) => {
+			window.location.href = "expenseCreation.html";
+		}
+		document.querySelector("#budgetOverview").onclick = (event) => {
+			window.location.href = "budgetOverview.html";
+		}
+		document.querySelector("#expenseHistory").onclick = (event) => {
+			window.location.href = "expenseHistory.html";
+		}
+	}
+}
+
+/* Main */
+/** function and class syntax examples */
+rhit.main = function () {
+
+	if (document.querySelector("#logoutClick")) {
+		document.querySelector("#logoutClick").onclick = (event) => {
+			console.log("sign out");
+			rhit.fbAuthManager.signOut();
+		}
+	}
+
+
+	console.log("making new authmanager");
+	rhit.fbAuthManager = new rhit.AuthManager();
+	rhit.fbAuthManager.beginListening((event) => {
+		console.log("We are listening now. Using AuthManager.");
+		console.log("isSigned: ", rhit.fbAuthManager.isSignedIn);
+
+		rhit.checkForRedirects();
+
+		rhit.initializePage();
+
+		
+
+
+	});
+
+	
 
 
 
