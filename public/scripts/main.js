@@ -365,7 +365,11 @@ rhit.FbExpenseAddController = class {
 		}
 		rhit.fbSingleExpenseManager.beginListening(this.updateList.bind(this));
 	}
+
 	_createBudgetDropdown(budget) {
+		if(!budget){
+			return htmlToElement(`<option value="no_budget">No Budget</option>`);
+		}
 		let category = budget.category;
 		let amount = budget.amount;
 
@@ -378,6 +382,7 @@ rhit.FbExpenseAddController = class {
 		console.log(`Example expense = `, rhit.fbSingleExpenseManager.getBudgetAtIndex(0));
 
 		const newList = htmlToElement(`<select name="budgets" id="budgets"></select>`);
+		newList.appendChild(this._createBudgetDropdown(null));
 
 		for (let i = 0; i < rhit.fbSingleExpenseManager.budgetLength; i++) {
 			const budget = rhit.fbSingleExpenseManager.getBudgetAtIndex(i);
