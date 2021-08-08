@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
   <link rel="stylesheet" href="styles/bootstrap-material-design.min.css">
   <link rel="stylesheet" href="styles/main.css">
-  <title>App Name</title>
+  <title>Banking App</title>
 </head>
 
 <body>
@@ -22,28 +22,30 @@
           </a>
         </div>
       </div>
+      <span class="top_pageDisplay">
+        Add Expense
+      </span>
     </div>
   </nav>
   <div id="expenseCreationPage" class="container page-container">
 
-
-    <div id="expenseCreationWrapper" class="form-horizontal">
-      <input type="text" id="addExpenseAmount" placeholder="Amount"><br>
-      <input type="text" id="addExpenseCategory" placeholder="Category"><br>
-      <input type="date" id="addExpenseDate" placeholder="Date"><br>
-      <div id="dropdownContainer">
-        <select name="budget" id="budgets">
-          <option value = "temp" id="dropdownList"></option>
-          <!-- <option value="test1">Test 1</option>
-          <option value="test2">Test 2</option>
-          <option value="test3">Test 3</option> -->
-        </select>
-      </div>
-
-      
-
-      <button id="submitAddExpense" class="btn btn-outline">Submit</button>
+<div id="wrapperSection">
+  <div id="expenseCreationWrapper" class="form-horizontal">
+    <input type="text" class="expenseInput" id="addExpenseAmount" placeholder="Amount"><br>
+    <input type="text" class="expenseInput" id="addExpenseCategory" placeholder="Category"><br>
+    <input type="date" class="expenseInput" id="addExpenseDate" placeholder="Date"><br>
+    <div id="dropdownContainer">
+      <select name="budget" id="budgets" class="dropdown-toggle">
+        <option value = "temp" id="dropdownList"></option>
+      </select>
     </div>
+
+    
+
+    <button id="submitAddExpense" class="btn btn-outline">Submit</button>
+  </div>
+</div>
+
 
 
 

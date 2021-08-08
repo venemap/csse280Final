@@ -221,3 +221,36 @@ body.active .wrapper .section {
     float: right;
     left: -10px;
 }
+
+#wrapperSection {
+    display: flex;
+    justify-content: center;
+    padding-top: 5em;
+}
+
+.expenseInput, #budgets, .budgetInput {
+    margin: 35px 0px;
+    width: 210px;
+}
+
+#submitAddExpense, #submitAddBudget {
+    float: right;   
+    margin: 10px 0px;
+}
+
+#budgets {
+    background-color: white;
+}
+
+/* select {
+    width: 268px;
+    padding: 5px;
+    font-size: 16px;
+    line-height: 1;
+    border: 0;
+    border-radius: 5px;
+    height: 34px;
+    background: url(http://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png) no-repeat right #ddd;
+    -webkit-appearance: none;
+    background-position-x: 244px;
+} */

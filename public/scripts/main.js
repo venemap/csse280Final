@@ -428,7 +428,7 @@ rhit.FbExpenseAddController = class {
 		console.log(`Num budgets = ${rhit.fbSingleExpenseManager.budgetLength}`);
 		console.log(`Example expense = `, rhit.fbSingleExpenseManager.getBudgetAtIndex(0));
 
-		const newList = htmlToElement(`<select name="budgets" id="budgets"></select>`);
+		const newList = htmlToElement(`<select name="budgets" id="budgets" class="dropdown-toggle"></select>`);
 		newList.appendChild(this._createBudgetDropdown(null));
 
 		for (let i = 0; i < rhit.fbSingleExpenseManager.budgetLength; i++) {
@@ -554,7 +554,7 @@ rhit.ExpenseChangePageController = class {
 		document.querySelector("#submitEditExpense").onclick = (event) => {
 			const amount = document.querySelector("#editExpenseAmount").value;
 			const category = document.querySelector("#editExpenseCategory").value;
-			rhit.fbExpenseChanexpenseHistory.htmlgeManager.update(amount, category);
+			rhit.fbExpenseChangeManager.htmlgeManager.update(amount, category);
 		}
 
 		rhit.fbExpenseChangeManager.beginListening(this.updateView.bind(this));
