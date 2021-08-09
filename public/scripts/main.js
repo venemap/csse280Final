@@ -34,6 +34,15 @@ rhit.Budget = class {
 
 rhit.BudgetListPageController = class {
 	constructor() {
+
+		document.querySelector("#budgetDelete").addEventListener("click", event => {
+			rhit.fbBudgetManager.delete().then(() => {
+				console.log("Document successfully deleted!");
+				window.location.href = "#";
+			}).catch(error => console.error("Error removing document: ", error));
+		});
+
+
 		rhit.fbBudgetManager.beginListening(this.updateList.bind(this));
 
 		// if(document.querySelector("#logoutClick")) {
@@ -54,8 +63,8 @@ rhit.BudgetListPageController = class {
 					<i class="material-icons">more_horiz</i>
 				</button>
 				<div class="dropdown-menu dropdown-menu-right" aria-labelledby="lr1">
-					<button class="dropdown-item" type="button"><i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;&nbsp;Edit</button>
-					<button class="dropdown-item" type="button"><i class="material-icons">delete</i>&nbsp;&nbsp;&nbsp;&nbsp;Delete</button>
+					<button id="budgetEdit" class="dropdown-item" type="button"><i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;&nbsp;Edit</button>
+					<button id="budgetDelete" class="dropdown-item" type="button"><i class="material-icons">delete</i>&nbsp;&nbsp;&nbsp;&nbsp;Delete</button>
 				</div>
 			</span>
 	  	</div>
@@ -114,6 +123,7 @@ rhit.FbBudgetManager = class {
 		this._documentSnapshots = [];
 		this._expenseSnapshots = [];
 		this._ref = firebase.firestore().collection(rhit.FB_BUDGET_COLLECTION);
+		this._ref2 = firebase.firestore().collection(rhit.FB_BUDGET_COLLECTION).doc(uid);
 		this._expenseRef = firebase.firestore().collection(rhit.FB_EXPENSE_COLLECTION);
 		this._unsubscribe = null;
 		this._uid = uid;
@@ -155,6 +165,10 @@ rhit.FbBudgetManager = class {
 
 	stopListening() {
 		this._unsubscribe();
+	}
+
+	delete(){
+		return this._ref2.delete();
 	}
 
 	get length() {
@@ -200,6 +214,14 @@ rhit.Expense = class {
 
 rhit.ExpenseListPageController = class {
 	constructor() {
+
+		document.querySelector("#expenseDelete").addEventListener("click", event => {
+			rhit.fbExpenseManager.delete().then(() => {
+				console.log("Document successfully deleted!");
+				window.location.href = "#";
+			}).catch(error => console.error("Error removing document: ", error));
+		});
+
 		rhit.fbExpenseManager.beginListening(this.updateList.bind(this));
 	}
 
@@ -263,6 +285,7 @@ rhit.FbExpenseManager = class {
 	constructor(uid) {
 		this._documentSnapshots = [];
 		this._ref = firebase.firestore().collection(rhit.FB_EXPENSE_COLLECTION);
+		this._ref2 = firebase.firestore().collection(rhit.FB_EXPENSE_COLLECTION).doc(uid);
 		this._unsubscribe = null;
 		this._uid = uid;
 
@@ -291,6 +314,10 @@ rhit.FbExpenseManager = class {
 
 	stopListening() {
 		this._unsubscribe();
+	}
+
+	delete() {
+		return this._ref.delete();
 	}
 
 	get length() {
@@ -554,7 +581,7 @@ rhit.ExpenseChangePageController = class {
 		document.querySelector("#submitEditExpense").onclick = (event) => {
 			const amount = document.querySelector("#editExpenseAmount").value;
 			const category = document.querySelector("#editExpenseCategory").value;
-			rhit.fbExpenseChangeManager.htmlgeManager.update(amount, category);
+			rhit.fbExpenseChangeManager.update(amount, category);
 		}
 
 		rhit.fbExpenseChangeManager.beginListening(this.updateView.bind(this));
