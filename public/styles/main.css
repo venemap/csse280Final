@@ -6,10 +6,6 @@ body {
     padding-bottom: 20px;
 }
 
-#budgetOverviewPage h2{
-    padding-bottom: 90px;
-}
-
 .center {
     display: block;
     margin-left: auto;
@@ -203,11 +199,11 @@ span.page-container{
 
 .budget-option-menu {
     display: block;
-    float: right;
+    float: right;   
 }
 
 #fab {
-    background: #800;
+    background: #3483eb;
     bottom: 10px;
     color: white;
     position: fixed;
@@ -220,11 +216,11 @@ span.page-container{
     opacity: 0.8;
 }
 
-.expenseDate {
+/* .expenseDate {
     display: block;
     float: right;
     left: -10px;
-}
+} */
 
 #wrapperSection {
     display: flex;
@@ -246,15 +242,18 @@ span.page-container{
     background-color: white;
 }
 
-/* select {
-    width: 268px;
-    padding: 5px;
-    font-size: 16px;
-    line-height: 1;
-    border: 0;
-    border-radius: 5px;
-    height: 34px;
-    background: url(http://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/br_down.png) no-repeat right #ddd;
-    -webkit-appearance: none;
-    background-position-x: 244px;
-} */
+#BudgetOverview-Label, #ExpenseOverview-Label {
+    margin-bottom: 8px;
+}
+
+.expenseRightSideWrapper {
+    display: right;
+    float: right;
+}
+
+#expenseTitle, #budgetTitle {
+    text-align: center;
+    padding-bottom: 90px;
+    padding-top: 1.25em;
+
+}

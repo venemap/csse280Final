@@ -97,11 +97,11 @@ rhit.BudgetListPageController = class {
 
 			const newBudget = this._createBudget(budget, total);
 
-			newBudget.onclick = (event) => {
-				console.log(`You clicked on ${budget.id}`);
+			// newBudget.onclick = (event) => {
+			// 	console.log(`You clicked on ${budget.id}`);
 
-				window.location.href = `/budgetEdit.html?id=${budget.id}`
-			}
+			// 	window.location.href = `/budgetEdit.html?id=${budget.id}`
+			// }
 
 			newList.appendChild(newBudget);
 
@@ -214,7 +214,6 @@ rhit.Expense = class {
 
 rhit.ExpenseListPageController = class {
 	constructor() {
-
 		document.querySelector("#expenseDelete").addEventListener("click", event => {
 			rhit.fbExpenseManager.delete().then(() => {
 				console.log("Document successfully deleted!");
@@ -236,20 +235,26 @@ rhit.ExpenseListPageController = class {
 			date = firebase.firestore.Timestamp.now();
 			console.log("DATE FOR EXPENSE DNE");
 		}
-		return htmlToElement(`<div id="ExpenseOverview-Label">
-		<span>${category} $ ${amount}</span><span class="expenseDate">${date.toDate().getMonth()}/${date.toDate().getDay()}/${date.toDate().getFullYear()}</span>
+		return htmlToElement(`
+		<div id="ExpenseOverview-Label">
+			<span>${category} $ ${amount}</span>  
+			
+			<span class="expenseRightSideWrapper">
+			<span class="expenseDate">${date.toDate().getMonth()}/${date.toDate().getDay()}/${date.toDate().getFullYear()}</span>
   
-		<span class="dropdown pull-xs-right budget-option-menu">
-		  <button class="btn bmd-btn-icon dropdown-toggle" type="button" id="lr1" data-toggle="dropdown">
-			<i class="material-icons">more_horiz</i>
-		  </button>
-		  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="lr1">
-			<button class="dropdown-item" type="button"><i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;&nbsp;Edit</button>
-			<button class="dropdown-item" type="button"><i class="material-icons">delete</i>&nbsp;&nbsp;&nbsp;&nbsp;Delete</button>
-		  </div>
-		</span>
-	  </div>
-	  <br>`);
+			<span class="dropdown pull-xs-right expense-option-menu">
+		  		<button class="btn bmd-btn-icon dropdown-toggle" type="button" id="lr1" data-toggle="dropdown">
+					<i class="material-icons">more_horiz</i>
+		  		</button>
+		  		<div class="dropdown-menu dropdown-menu-right" aria-labelledby="lr1">
+					<button class="dropdown-item" type="button"><i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;&nbsp;Edit</button>
+					<button class="dropdown-item" type="button"><i class="material-icons">delete</i>&nbsp;&nbsp;&nbsp;&nbsp;Delete</button>
+		  		</div>
+			</span>
+			</span>
+		</div>
+		<hr>`
+		);
 	}
 
 	updateList() {
@@ -263,11 +268,11 @@ rhit.ExpenseListPageController = class {
 			const exp = rhit.fbExpenseManager.getExpenseAtIndex(i);
 			const newExpense = this._createExpense(exp);
 
-			newExpense.onclick = (event) => {
-				console.log(`you clicked on ${exp.id}`);
+			// newExpense.onclick = (event) => {
+			// 	console.log(`you clicked on ${exp.id}`);
 
-				window.location.href = `/expenseEdit.html?id=${exp.id}`;
-			}
+			// 	window.location.href = `/expenseEdit.html?id=${exp.id}`;
+			// }
 
 			newList.appendChild(newExpense);
 		}
