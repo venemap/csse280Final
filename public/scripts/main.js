@@ -2,6 +2,10 @@ var rhit = rhit || {};
 
 /** globals */
 rhit.variableName = "";
+n =  new Date();
+y = n.getFullYear();
+m = n.getMonth() + 1;
+d = n.getDate();
 
 rhit.FB_BUDGET_COLLECTION = "Budget"
 rhit.FB_KEY_AMOUNT = "Amount";
@@ -237,7 +241,7 @@ rhit.ExpenseListPageController = class {
 		}
 		return htmlToElement(`
 		<div id="ExpenseOverview-Label">
-			<span>${category} $ ${amount}</span>  
+			<span>${category} $${amount} </span>  
 			
 			<span class="expenseRightSideWrapper">
 			<span class="expenseDate">${date.toDate().getMonth()}/${date.toDate().getDay()}/${date.toDate().getFullYear()}</span>
@@ -824,8 +828,7 @@ rhit.main = function () {
 
 		rhit.initializePage();
 
-		
-
+		document.getElementById("date").innerHTML = m + "/" + d + "/" + y;
 
 	});
 
