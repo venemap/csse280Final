@@ -171,6 +171,10 @@ body.active .wrapper .section {
     display: inline-block;
 }
 
+span.page-container{
+    text-align: center;
+}
+
 
 
 
