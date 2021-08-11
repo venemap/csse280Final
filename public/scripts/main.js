@@ -28,14 +28,6 @@ function htmlToElement(html) {
 	return template.content.firstChild;
 }
 
-rhit.Budget = class {
-	constructor(id, category, amount) {
-		this.id = id;
-		this.category = category;
-		this.amount = amount;
-	}
-}
-
 rhit.BudgetListPageController = class {
 	constructor() {
 
@@ -79,7 +71,7 @@ rhit.BudgetListPageController = class {
 		console.log("update the page for budgets");
 
 		console.log(`Num budgets = ${rhit.fbBudgetManager.length}`);
-		console.log(`Example Budget: `, rhit.fbBudgetManager.getBudgetAtIndex(0));
+		//console.log(`Example Budget: `, rhit.fbBudgetManager.getBudgetAtIndex(0));
 
 		const newList = htmlToElement('<div id="BudgetOverview-Label"></div>')
 
@@ -114,7 +106,6 @@ rhit.BudgetListPageController = class {
 		
 		const oldBudget = document.querySelector("#BudgetOverview-Label");
 		oldBudget.removeAttribute("id");
-
 		oldBudget.hidden = true;
 		oldBudget.parentElement.appendChild(newList);
 
@@ -206,6 +197,14 @@ rhit.FbBudgetManager = class {
 	}
 }
 
+rhit.Budget = class {
+	constructor(id, category, amount) {
+		this.id = id;
+		this.category = category;
+		this.amount = amount;
+	}
+}
+
 rhit.Expense = class {
 	constructor(id, category, amount, date, budgetName) {
 		this.id = id;
@@ -218,6 +217,7 @@ rhit.Expense = class {
 
 rhit.ExpenseListPageController = class {
 	constructor() {
+		console.log("I'm not crazy");
 		document.querySelector("#expenseDelete").addEventListener("click", event => {
 			rhit.fbExpenseManager.delete().then(() => {
 				console.log("Document successfully deleted!");
@@ -225,7 +225,16 @@ rhit.ExpenseListPageController = class {
 			}).catch(error => console.error("Error removing document: ", error));
 		});
 
+		document.querySelector("#expenseEdit1").addEventListener("click", event => {
+			console.log("Editting");
+		});
+
+		document.getElementById("expenseEdit1").addEventListener("click", event => {
+			console.log("Editting");
+		});
+
 		rhit.fbExpenseManager.beginListening(this.updateList.bind(this));
+
 	}
 
 	_createExpense(expense) {
@@ -251,8 +260,8 @@ rhit.ExpenseListPageController = class {
 					<i class="material-icons">more_horiz</i>
 		  		</button>
 		  		<div class="dropdown-menu dropdown-menu-right" aria-labelledby="lr1">
-					<button class="dropdown-item" type="button"><i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;&nbsp;Edit</button>
-					<button class="dropdown-item" type="button"><i class="material-icons">delete</i>&nbsp;&nbsp;&nbsp;&nbsp;Delete</button>
+					<button id="expenseEdit1" class="dropdown-item" type="button"><i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;&nbsp;Edit</button>
+					<button id="expenseDelete" class="dropdown-item" type="button"><i class="material-icons">delete</i>&nbsp;&nbsp;&nbsp;&nbsp;Delete</button>
 		  		</div>
 			</span>
 			</span>
@@ -462,7 +471,7 @@ rhit.FbExpenseAddController = class {
 	updateList() {
 		console.log("I need to update the dropdown on the expense page");
 		console.log(`Num budgets = ${rhit.fbSingleExpenseManager.budgetLength}`);
-		console.log(`Example expense = `, rhit.fbSingleExpenseManager.getBudgetAtIndex(0));
+		//console.log(`Example expense = `, rhit.fbSingleExpenseManager.getBudgetAtIndex(0));
 
 		const newList = htmlToElement(`<select name="budgets" id="budgets" class="dropdown-toggle"></select>`);
 		newList.appendChild(this._createBudgetDropdown(null));
@@ -522,9 +531,10 @@ rhit.FbBudgetController = class {
 			const category = document.querySelector("#addBudgetCategory").value;
 
 			if(amount != "" && category != ""){
+				console.log(`${amount}, ${category}`);
 				rhit.fbSingleBudgetManager.add(amount, category);
 
-				window.location.href = "budgetOverview.html";
+				//window.location.href = "budgetOverview.html";
 			}
 		}
 	}
@@ -770,6 +780,10 @@ rhit.initializePage = function () {
 		new rhit.FbBudgetController();
 	}
 
+	// if (document.querySelector("#expenseEdit1")){
+	// 	window.location.href = "expenseEdit.html";
+	// }
+
 	if (document.querySelector("#expenseEditPage")) {
 		console.log("you are on the expenseEdit page");
 
@@ -784,9 +798,6 @@ rhit.initializePage = function () {
 			console.log("ERROR!!! MISSING MOVIE QUOTE ID");
 			window.location.href = "/";
 		}
-
-
-
 		rhit.fbExpenseChangeManager = new rhit.FbExpenseChangeManager(expenseId);
 		//new rhit.DetailPageController();
 		new rhit.ExpenseChangePageController();
