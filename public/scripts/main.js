@@ -225,6 +225,7 @@ rhit.ExpenseListPageController = class {
 		document.querySelector("#expenseEdit1").addEventListener("click", event => {
 			console.log("Editting");
 		});
+
 		let a = document.querySelectorAll("#expenseEdit1");
 		console.log(a);
 		for (let i = 0; i < a.length; i++){
@@ -543,7 +544,8 @@ rhit.FbBudgetController = class {
 				console.log(`${amount}, ${category}`);
 				rhit.fbSingleBudgetManager.add(amount, category);
 
-				//window.location.href = "budgetOverview.html";
+				// If this uncommented, the add doesnt finish before redirecting
+				// window.location.href = "/budgetOverview.html";
 			}
 		}
 	}
@@ -788,7 +790,7 @@ rhit.checkForRedirects = function () {
 	if (document.querySelector("#login") && rhit.fbAuthManager.isSignedIn) {
 		console.log("redirecting to /main.html");
 
-		// window.location.href = "/main.html";
+		window.location.href = "/main.html";
 
 
 		$(document).ready( function () {
@@ -805,7 +807,7 @@ rhit.checkForRedirects = function () {
 	if (!document.querySelector("#login") && !rhit.fbAuthManager.isSignedIn) {
 		console.log("not logged in and on main site");
 		console.log('redirecting to login.html');
-		// window.location.href = "/login.html";
+		window.location.href = "/login.html";
 	}
 
 }
@@ -886,7 +888,7 @@ rhit.initializePage = function () {
 		new rhit.ExpenseChangePageController();
 	}
 
-	if (document.querySelectorAll("#budgetEditPage")){
+	if (document.querySelector("#budgetEditPage")){
 		console.log("on budget edit page");
 
 		const queryString = window.location.search;
