@@ -183,6 +183,14 @@ rhit.FbBudgetManager = class {
 		);
 		return exp;
 	}
+
+	get totalBudgetsAmount() {
+		let total = 0;
+		for (let i = 0; i < this._documentSnapshots.length; i++){
+			total += parseInt(this.getBudgetAtIndex(i).amount);
+		}
+		return total;
+	}
 }
 
 rhit.Budget = class {
@@ -818,35 +826,40 @@ rhit.OverviewController = class {
 
 
 
-		// jQuery(document).ready(function() {
-			console.log("this_labels in ready function: " + this._labels);
-			var chartDiv = $("#barChart");
-			var myChart = new Chart(chartDiv, {
-				type: 'pie',
-				data: {
-					labels: this._labels,
-					datasets: [
-					{
-						data: this._data,
-						backgroundColor: this._tempColors,
-					}]
+		console.log("this_labels in ready function: " + this._labels);
+		var chartDiv = $("#barChart");
+		var myChart = new Chart(chartDiv, {
+			type: 'pie',
+			data: {
+				labels: this._labels,
+				datasets: [
+				{
+					data: this._data,
+					backgroundColor: this._tempColors,
+				}]
+			},
+			options: {
+				title: {
+					display: false,
+					text: 'Pie Chart'
 				},
-				options: {
-					title: {
-						display: false,
-						text: 'Pie Chart'
-					},
-					legend: {
-						display: true,
-						position: 'right',
-						align: 'start',
-						fullsize: true,
-					},
-					responsive: true,
-					maintainAspectRatio: true,
-				}
-			});
-		// });
+				legend: {
+					display: true,
+					position: 'right',
+					align: 'start',
+					fullsize: true,
+				},
+				responsive: true,
+				maintainAspectRatio: true,
+			}
+		});
+
+		console.log(rhit.fbBudgetManager.totalBudgetsAmount);
+
+		document.querySelector("#overviewStatus").innerHTML = `${rhit.fbAuthManager.uid}, you have $${rhit.fbBudgetManager.totalBudgetsAmount} left in your budgets`
+
+
+
 
 	}
 }
