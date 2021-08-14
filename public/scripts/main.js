@@ -810,15 +810,42 @@ rhit.OverviewController = class {
 	}
 
 	updateList() {
+
+
+		const newList = htmlToElement(`<div class="modal-body"></div>`);
+
 		for (let i = 0; i < rhit.fbBudgetManager.length; i++) {
-			const exp = rhit.fbBudgetManager.getBudgetAtIndex(i);
+			const budget = rhit.fbBudgetManager.getBudgetAtIndex(i);
 			// const newExpense = this._createExpense(exp);
 			// console.log(exp);
 			// newList.appendChild(newExpense);
-			this._labels.push(exp.category);
-			this._data.push(exp.amount);
+			this._labels.push(budget.category);
+			this._data.push(budget.amount);
 			this._backgroundColors.push(this._tempColors[i]);
+
+			const newBudget = this._createBudget(budget);
+
+			newList.appendChild(newBudget);
 		}
+
+		const oldList = document.querySelector(".modal-body");
+		oldList.removeAttribute("id");
+		oldList.hidden = true;
+		oldList.parentElement.appendChild(newList);
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
 		console.log("labels: " + this._labels);
 		console.log("data: " + this._data);
 
@@ -858,10 +885,32 @@ rhit.OverviewController = class {
 
 		document.querySelector("#overviewStatus").innerHTML = `${rhit.fbAuthManager.uid}, you have $${rhit.fbBudgetManager.totalBudgetsAmount} left in your budgets`
 
-
+		// document.querySelector(".modal-body").innerHTML = "testestest";
 
 
 	}
+
+
+	_createBudget(budget) {
+		let category = budget.category;
+		let amount = budget.amount;
+
+		return htmlToElement(`
+		<div> ${category}: $ XXX / ${amount}
+		</div>`
+		);
+	}
+
+
+
+
+
+
+
+
+
+
+
 }
 
 
@@ -1077,9 +1126,6 @@ rhit.initializePage = function () {
 	if(document.querySelector("#mainPage")){
 		rhit.fbBudgetManager = new rhit.FbBudgetManager(rhit.fbAuthManager.uid);
 
-
-
-		$('#myModal').modal('show');
 		document.querySelector("#expenseCreation").onclick = (event) => {
 			window.location.href = "expenseCreation.html";
 		}
@@ -1092,6 +1138,8 @@ rhit.initializePage = function () {
 
 
 		new rhit.OverviewController();
+
+		$('#myModal').modal('show');
 	}
 }
 
