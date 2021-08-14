@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
   <link rel="stylesheet" href="styles/bootstrap-material-design.min.css">
   <link rel="stylesheet" href="styles/main.css">
-  <title>Main</title>
+  <title>App Name</title>
 </head>
 
 <body>
@@ -18,49 +18,35 @@
           <span class="material-icons">view_headline</span>
         </div>
       </span>
-      <span class="top_pageDisplay">
-        Overview
-      </span>
+      <span class="top_pageDisplay">History</span>
     </div>
   </nav>
+  <div id="moreInfo" class="container page-container">
 
-  <!-- Modal -->
-  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Monthly Budget Overview</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true"></span>
-          </button>
+    <!-- <h1>Expense History</h1> -->
+    <h2 id="expenseTitle">More Info</h2>
+
+    <div id="wrapper-moreInfo">
+
+   
+    <div id="moreInfo-Label">
+      <span>Loading...</span>
+
+      <span class="dropdown pull-xs-right budget-option-menu">
+        <button class="btn bmd-btn-icon dropdown-toggle" type="button" id="lr1" data-toggle="dropdown">
+          <i class="material-icons">more_horiz</i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="lr1">
+          <button id="expenseEdit1" class="dropdown-item" type="button"><i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;&nbsp;Edit</button>
+          <button id="expenseDelete" class="dropdown-item" type="button"><i class="material-icons">delete</i>&nbsp;&nbsp;&nbsp;&nbsp;Delete</button>
         </div>
-        <div class="modal-body">
-          Entertainment: $xx/xxxx
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
-      </div>
+      </span>
     </div>
-  </div>  
+    <br>   
+    
+    
+  </div>
 
-  <div id="mainPage" class="container page-container">
-
-    <h1 style="text-align: center">USER, you have $XXX left in account</h1>
-    <br>
-
-
-    <div class="container">
-        <h2 class="text-center">PIE chart using Chartjs,jQuery and Bootstrap</h2>
-        <canvas id="barChart" width="400" height="400"></canvas>
-    </div>
-
-        <br>
-    <div class="Main-buttons">
-      <button type="button" id="expenseCreation" class="btn btn-primary"> Expense</button>
-      <button type="button" id="budgetOverview" class="btn btn-primary">Budgets</button>
-      <button type="button" id="expenseHistory" class="btn btn-primary">History</button>
-    </div>
 
     <div class="wrapper">
       <div class="sidebar">
@@ -71,7 +57,7 @@
         </div>
        <ul>
         <li>
-          <a href="main.html" class="sidebarElement active">
+          <a href="main.html" class="sidebarElement">
             <span class="item">Overview</span>
           </a>
         </li>
@@ -86,7 +72,7 @@
           </a>
         </li>
         <li>
-          <a href="expenseHistory.html" class="sidebarElement">
+          <a href="expenseHistory.html" class="sidebarElement active">
             <span class="item">History</span>
           </a>
         </li>
@@ -98,7 +84,6 @@
        </ul>
       </div>
     </div>
-
   </div>
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>
@@ -109,7 +94,6 @@
   <script src="/__/firebase/7.18.0/firebase-auth.js"></script>
   <script src="/__/firebase/7.18.0/firebase-firestore.js"></script>
   <script src="/__/firebase/init.js"></script>
-  <script src="scripts/Chart.js"></script>
   <script src="scripts/main.js"></script>
 </body>
 

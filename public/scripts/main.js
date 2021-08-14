@@ -21,6 +21,7 @@ rhit.fbExpenseManager = null;
 rhit.fbSingleExpenseManager = null;
 rhit.fbAuthManager = null;
 rhit.fbBudgetChangeManager = null;
+rhit.fbBudgetMoreInfoManager = null;
 
 function htmlToElement(html) {
 	var template = document.createElement('template');
@@ -31,17 +32,7 @@ function htmlToElement(html) {
 
 rhit.BudgetListPageController = class {
 	constructor() {
-
-		document.querySelector("#budgetDelete").addEventListener("click", event => {
-			rhit.fbBudgetManager.delete().then(() => {
-				console.log("Document successfully deleted!");
-				window.location.href = "#";
-			}).catch(error => console.error("Error removing document: ", error));
-		});
-
-
 		rhit.fbBudgetManager.beginListening(this.updateList.bind(this));
-
 	}
 
 	_createBudget(budget, total) {
@@ -54,8 +45,9 @@ rhit.BudgetListPageController = class {
 					<i class="material-icons">more_horiz</i>
 				</button>
 				<div class="dropdown-menu dropdown-menu-right" aria-labelledby="lr1">
-					<button id="budgetEdit" class="dropdown-item" type="button" onclick = "window.location.href = '/budgetEdit.html?id=${budget.id}'"><i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;&nbsp;Edit</button>
-					<button id="budgetDelete" class="dropdown-item" type="button"><i class="material-icons">delete</i>&nbsp;&nbsp;&nbsp;&nbsp;Delete</button>
+					<button id="moreInfo" class="dropdown-item moreInfo" type="button"><i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;&nbsp;More Info</button>
+					<button id="budgetEdit" class="dropdown-item budgetEdit" type="button"><i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;&nbsp;Edit</button>
+					<button id="budgetDelete" class="dropdown-item budgetDelete" type="button"><i class="material-icons">delete</i>&nbsp;&nbsp;&nbsp;&nbsp;Delete</button>
 				</div>
 			</span>
 	  	</div>
@@ -82,21 +74,22 @@ rhit.BudgetListPageController = class {
 					console.log(expense, budget);
 					total += parseInt(expense.amount);
 				}
-				
-
 			}
 
 			const newBudget = this._createBudget(budget, total);
 
-			// newBudget.onclick = (event) => {
-			// 	console.log(`You clicked on ${budget.id}`);
-
-			// 	window.location.href = `/budgetEdit.html?id=${budget.id}`
-			// }
-
+			newBudget.querySelector(".budgetEdit").onclick = (event) => {
+				console.log("editing budget");
+				window.location.href = `/budgetEdit.html?id=${budget.id}`;
+			}
+			newBudget.querySelector(".budgetDelete").onclick = (event) => {
+				console.log("deleting budget");
+				rhit.fbBudgetManager.delete(budget.id);
+			}
+			newBudget.querySelector(".moreInfo").onclick = (event) => {
+				window.location.href = `/budgetMoreInfo.html?id=${budget.category}`;
+			}
 			newList.appendChild(newBudget);
-
-
 		}
 		
 		const oldBudget = document.querySelector("#BudgetOverview-Label");
@@ -135,7 +128,7 @@ rhit.FbBudgetManager = class {
 				console.log(doc.data);
 			})
 
-			changeListener();
+			// changeListener();
 		})
 
 		query = this._expenseRef.limit(30);
@@ -157,8 +150,8 @@ rhit.FbBudgetManager = class {
 		this._unsubscribe();
 	}
 
-	delete(){
-		return this._ref2.delete();
+	delete(id){
+		return this._ref.doc(id).delete();
 	}
 
 	get length() {
@@ -210,41 +203,33 @@ rhit.Expense = class {
 	}
 }
 
-rhit.ExpenseListPageController = class {
+rhit.BudgetMoreInfoController = class {
 	constructor() {
-		rhit.fbExpenseManager.beginListening(this.updateList.bind(this));
+		// console.log("making more info controller");
+		rhit.fbBudgetMoreInfoManager.beginListening(this.updateList.bind(this));
+	}
 
-		// console.log("I'm not crazy");
-		document.querySelector("#expenseDelete").addEventListener("click", event => {
-			rhit.fbExpenseManager.delete().then(() => {
-				console.log("Document successfully deleted!");
-				window.location.href = "#";
-			}).catch(error => console.error("Error removing document: ", error));
-		});
+	updateList() {
+		console.log("I need to update the list of the moreInfo page");
+		console.log(`Num expenses = ${rhit.fbBudgetMoreInfoManager.length}`);
+		console.log(`Example expense = `, rhit.fbBudgetMoreInfoManager.getExpenseAtIndex(0));
 
-		document.querySelector("#expenseEdit1").addEventListener("click", event => {
-			console.log("Editting");
-		});
+		const newList = htmlToElement(`<div id="wrapper-moreInfo"></div>`);
 
-		let a = document.querySelectorAll("#expenseEdit1");
-		console.log(a);
-		for (let i = 0; i < a.length; i++){
-			console.log(a[i]);
+		for (let i = 0; i < rhit.fbBudgetMoreInfoManager.length; i++) {
+			const exp = rhit.fbBudgetMoreInfoManager.getExpenseAtIndex(i);
+			const newExpense = this._createExpense(exp);
+			console.log(newExpense);
+
+			newList.appendChild(newExpense);
 		}
 
+		const oldList = document.querySelector("#wrapper-moreInfo");
+		oldList.removeAttribute("id");
 
-		document.querySelector("#expenseEdit1").onclick = (event) => {
-			console.log("edit page");
-		}
+		oldList.hidden = true;
 
-		document.getElementById("expenseEdit1").addEventListener("click", event => {
-			console.log("Editting");
-		});
-
-		console.log("after onclicks have been made");
-
-	
-
+		oldList.parentElement.appendChild(newList);
 	}
 
 	_createExpense(expense) {
@@ -270,8 +255,95 @@ rhit.ExpenseListPageController = class {
 						<i class="material-icons">more_horiz</i>
 					</button>
 					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="lr1">
-						<button id="expenseEdit1" class="dropdown-item" type="button" onclick="window.location.href = '/expenseEdit.html?id=${expense.id}'"><i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;&nbsp;Edit</button>
-						<button id="expenseDelete" class="dropdown-item" type="button"><i class="material-icons">delete</i>&nbsp;&nbsp;&nbsp;&nbsp;Delete</button>
+						<button "id="expenseEdit1" class="dropdown-item expenseEdit" type="button" onclick="window.location.href = '/expenseEdit.html?id=${expense.id}'"><i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;&nbsp;Edit</button>
+						<button id="expenseDelete" class="dropdown-item expenseDelete" type="button"><i class="material-icons">delete</i>&nbsp;&nbsp;&nbsp;&nbsp;Delete</button>
+					</div>
+				</span>
+			</span>
+		</div>
+		<hr>`
+		);
+	}
+
+}
+
+rhit.BudgetMoreInfoManager = class {
+	constructor(uid, categoryName) {
+		this._documentSnapshots = [];
+		this._ref = firebase.firestore().collection(rhit.FB_EXPENSE_COLLECTION);
+		this._unsubscribe = null;
+		this._uid = uid;
+		this._categoryName = categoryName;
+	}
+
+	beginListening(changeListener) {
+		let query = this._ref.limit(30);
+		
+		if(this._uid) query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
+
+		this._unsubscribe = query.onSnapshot((querySnapshot) => {
+			this._documentSnapshots = querySnapshot.docs;
+
+			querySnapshot.forEach((doc) => {
+				console.log(doc);
+			})
+		})
+
+		changeListener();
+	}
+
+	stopListening() {
+		this._unsubscribe();
+	}
+
+	get length() {
+		return this._documentSnapshots.length;
+	}
+
+	getExpenseAtIndex(index) {
+		const docSnapshot = this._documentSnapshots[index];
+		const exp = new rhit.Expense(
+			docSnapshot.id,
+			docSnapshot.get(rhit.FB_KEY_CATEGORY),
+			docSnapshot.get(rhit.FB_KEY_AMOUNT),
+			docSnapshot.get(rhit.FB_KEY_DATE),
+			docSnapshot.get(rhit.FB_KEY_BUDGETID),
+		);
+		return exp;
+	}
+}
+
+rhit.ExpenseListPageController = class {
+	constructor() {
+		rhit.fbExpenseManager.beginListening(this.updateList.bind(this));
+		console.log("after onclicks have been made");
+	}
+
+	_createExpense(expense) {
+		let category = expense.category;
+		let amount = expense.amount;
+		let date = null;
+		if (expense.date) {
+			date = expense.date;
+		} else {
+			//date = Date.now();
+			date = firebase.firestore.Timestamp.now();
+			console.log("DATE FOR EXPENSE DNE");
+		}
+		return htmlToElement(`
+		<div id="ExpenseOverview-Label">
+			<span>${category} $${amount} </span>  
+			
+			<span class="expenseRightSideWrapper">
+				<span class="expenseDate">${date.toDate().getMonth()}/${date.toDate().getDay()}/${date.toDate().getFullYear()}</span>
+	
+				<span class="dropdown pull-xs-right expense-option-menu">
+					<button class="btn bmd-btn-icon dropdown-toggle" type="button" id="lr1" data-toggle="dropdown">
+						<i class="material-icons">more_horiz</i>
+					</button>
+					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="lr1">
+						<button "id="expenseEdit1" class="dropdown-item expenseEdit" type="button" onclick="window.location.href = '/expenseEdit.html?id=${expense.id}'"><i class="material-icons">edit</i>&nbsp;&nbsp;&nbsp;&nbsp;Edit</button>
+						<button id="expenseDelete" class="dropdown-item expenseDelete" type="button"><i class="material-icons">delete</i>&nbsp;&nbsp;&nbsp;&nbsp;Delete</button>
 					</div>
 				</span>
 			</span>
@@ -291,11 +363,19 @@ rhit.ExpenseListPageController = class {
 			const exp = rhit.fbExpenseManager.getExpenseAtIndex(i);
 			const newExpense = this._createExpense(exp);
 
-			// newExpense.onclick = (event) => {
-			// 	console.log(`you clicked on ${exp.id}`);
+			newExpense.querySelector(".expenseEdit").onclick = (event) => {
+				console.log(i, "edit");
+				window.location.href = `/expenseEdit.html?id=${exp.id}`;
+			}
+			newExpense.querySelector(".expenseDelete").onclick = (event) => {
+				console.log(i, "delete");
+				rhit.fbExpenseManager.delete(exp.id).then(() => {
+					console.log("deleting" + exp.id);
+					
+				}).catch(error => console.error("error removing document", error));
+			}
 
-			// 	window.location.href = `/expenseEdit.html?id=${exp.id}`;
-			// }
+
 
 			newList.appendChild(newExpense);
 		}
@@ -344,8 +424,8 @@ rhit.FbExpenseManager = class {
 		this._unsubscribe();
 	}
 
-	delete() {
-		return this._ref.delete();
+	delete(id) {
+		return this._ref.doc(id).delete();
 	}
 
 	get length() {
@@ -712,6 +792,66 @@ rhit.LoginPageController = class {
 	}
 }
 
+rhit.OverviewController = class {
+	constructor() {
+		rhit.fbBudgetManager.beginListening(this.updateList.bind(this));
+		this._labels = [];
+		this._data = [];
+		this._backgroundColors = [];
+		this._tempColors = ["#FF6384", "#4BC0C0", "#FFCE56", "#E7E9ED",	"#36A2EB"]
+	}
+
+	updateList() {
+		for (let i = 0; i < rhit.fbBudgetManager.length; i++) {
+			const exp = rhit.fbBudgetManager.getBudgetAtIndex(i);
+			// const newExpense = this._createExpense(exp);
+			// console.log(exp);
+			// newList.appendChild(newExpense);
+			this._labels.push(exp.category);
+			this._data.push(exp.amount);
+			this._backgroundColors.push(this._tempColors[i]);
+		}
+		console.log("labels: " + this._labels);
+		console.log("data: " + this._data);
+
+		console.log("this._label length" + this._labels.length)
+
+
+
+		// jQuery(document).ready(function() {
+			console.log("this_labels in ready function: " + this._labels);
+			var chartDiv = $("#barChart");
+			var myChart = new Chart(chartDiv, {
+				type: 'pie',
+				data: {
+					labels: this._labels,
+					datasets: [
+					{
+						data: this._data,
+						backgroundColor: this._tempColors,
+					}]
+				},
+				options: {
+					title: {
+						display: false,
+						text: 'Pie Chart'
+					},
+					legend: {
+						display: true,
+						position: 'right',
+						align: 'start',
+						fullsize: true,
+					},
+					responsive: true,
+					maintainAspectRatio: true,
+				}
+			});
+		// });
+
+	}
+}
+
+
 rhit.startFireBaseUI = function () {
 	// FirebaseUI config.
 	var uiConfig = {
@@ -743,7 +883,7 @@ rhit.AuthManager = class {
 
 	beginListening(changeListener) {
 		firebase.auth().onAuthStateChanged((user) => {
-			console.log("auth state changing");
+			// console.log("auth state changing");
 			this._user = user;
 			changeListener();
 		});
@@ -786,7 +926,7 @@ rhit.AuthManager = class {
 }
 
 rhit.checkForRedirects = function () {
-	console.log("checking for redirects");
+	// console.log("checking for redirects");
 	if (document.querySelector("#login") && rhit.fbAuthManager.isSignedIn) {
 		console.log("redirecting to /main.html");
 
@@ -820,7 +960,7 @@ rhit.initializePage = function () {
 	}
 
 	if (document.querySelector(".sidebar")) {
-		console.log("sidebar is presetn");
+		// console.log("sidebar is presetn");
 		document.querySelector("#greetUser").innerHTML = `Hello, ${rhit.fbAuthManager.uid}`;
 	}
 
@@ -905,8 +1045,27 @@ rhit.initializePage = function () {
 		new rhit.BudgetChangeController();
 	}
 
+	if (document.querySelector("#moreInfo")){
+		const queryString = window.location.search;
+		console.log(queryString);
+		const urlParams = new URLSearchParams(queryString);
+		const budgetCategory = urlParams.get("id");
+
+		console.log("more info for " + budgetCategory);
+
+		
+		rhit.fbBudgetMoreInfoManager = new rhit.BudgetMoreInfoManager(rhit.fbAuthManager.uid, budgetCategory);
+
+		new rhit.BudgetMoreInfoController();
+
+	}
+
 
 	if(document.querySelector("#mainPage")){
+		rhit.fbBudgetManager = new rhit.FbBudgetManager(rhit.fbAuthManager.uid);
+
+
+
 		$('#myModal').modal('show');
 		document.querySelector("#expenseCreation").onclick = (event) => {
 			window.location.href = "expenseCreation.html";
@@ -917,6 +1076,9 @@ rhit.initializePage = function () {
 		document.querySelector("#expenseHistory").onclick = (event) => {
 			window.location.href = "expenseHistory.html";
 		}
+
+
+		new rhit.OverviewController();
 	}
 }
 
@@ -932,11 +1094,11 @@ rhit.main = function () {
 	}
 
 
-	console.log("making new authmanager");
+	// console.log("making new authmanager");
 	rhit.fbAuthManager = new rhit.AuthManager();
 	rhit.fbAuthManager.beginListening((event) => {
-		console.log("We are listening now. Using AuthManager.");
-		console.log("isSigned: ", rhit.fbAuthManager.isSignedIn);
+		// console.log("We are listening now. Using AuthManager.");
+		// console.log("isSigned: ", rhit.fbAuthManager.isSignedIn);
 
 		rhit.checkForRedirects();
 
@@ -945,6 +1107,8 @@ rhit.main = function () {
 		document.getElementById("date").innerHTML = m + "/" + d + "/" + y;
 
 	});
+
+
 
 	
 
