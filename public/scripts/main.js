@@ -191,6 +191,19 @@ rhit.FbBudgetManager = class {
 		}
 		return total;
 	}
+
+	totalExpenseForBudget(budgetName) {
+		console.log("total expense per budget");
+		let total = 0;
+		for(let i = 0; i < this._expenseSnapshots.length; i++){
+			console.log("expense[budgetCategory]: " + this.getExpenseAtIndex(i).budgetName);
+			if(this.getExpenseAtIndex(i).budgetName == budgetName){
+				total += parseInt(this.getExpenseAtIndex(i).amount);
+			}
+
+		}
+		return total;
+	}
 }
 
 rhit.Budget = class {
@@ -817,13 +830,16 @@ rhit.OverviewController = class {
 		for (let i = 0; i < rhit.fbBudgetManager.length; i++) {
 			const budget = rhit.fbBudgetManager.getBudgetAtIndex(i);
 			// const newExpense = this._createExpense(exp);
-			// console.log(exp);
+			console.log(budget.category);
+
+
+
 			// newList.appendChild(newExpense);
 			this._labels.push(budget.category);
 			this._data.push(budget.amount);
 			this._backgroundColors.push(this._tempColors[i]);
 
-			const newBudget = this._createBudget(budget);
+			const newBudget = this._createBudget(budget, rhit.fbBudgetManager.totalExpenseForBudget(budget.category));
 
 			newList.appendChild(newBudget);
 		}
@@ -885,18 +901,16 @@ rhit.OverviewController = class {
 
 		document.querySelector("#overviewStatus").innerHTML = `${rhit.fbAuthManager.uid}, you have $${rhit.fbBudgetManager.totalBudgetsAmount} left in your budgets`
 
-		// document.querySelector(".modal-body").innerHTML = "testestest";
-
 
 	}
 
 
-	_createBudget(budget) {
+	_createBudget(budget, amt) {
 		let category = budget.category;
 		let amount = budget.amount;
 
 		return htmlToElement(`
-		<div> ${category}: $ XXX / ${amount}
+		<div> ${category}: $ ${amt} / ${amount}
 		</div>`
 		);
 	}
