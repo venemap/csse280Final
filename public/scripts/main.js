@@ -346,6 +346,7 @@ rhit.ExpenseListPageController = class {
 		let date = null;
 		if (expense.date) {
 			date = expense.date;
+			// console.log(expense.amount, expense.date);
 		} else {
 			//date = Date.now();
 			date = firebase.firestore.Timestamp.now();
@@ -356,7 +357,7 @@ rhit.ExpenseListPageController = class {
 			<span>${category} $${amount} </span>  
 			
 			<span class="expenseRightSideWrapper">
-				<span class="expenseDate">${date.toDate().getMonth()}/${date.toDate().getDay()}/${date.toDate().getFullYear()}</span>
+				<span class="expenseDate">${date.toDate().getMonth() + 1}/${date.toDate().getDate()}/${date.toDate().getFullYear()}</span>
 	
 				<span class="dropdown pull-xs-right expense-option-menu">
 					<button class="btn bmd-btn-icon dropdown-toggle" type="button" id="lr1" data-toggle="dropdown">
@@ -554,14 +555,21 @@ rhit.FbExpenseAddController = class {
 			const category = document.querySelector("#addExpenseCategory").value;
 			const budgetName = document.querySelector("#budgets").value;
 			let date = new Date(document.querySelector("#addExpenseDate").value);
+			console.log(document.querySelector("#addExpenseDate").value);
 
 			// console.log(date);
 			// console.log(date.getTime() * 0.001);
 
 			date = date.getTime() * 0.001;
+			// console.log(date);
+			date += 43200; //add 12 hours
+			console.log(date);
 			date = new firebase.firestore.Timestamp(date, 0);
 
 			// console.log(date);
+
+			console.log(date);
+			console.log(date.toDate());
 
 
 			rhit.fbSingleExpenseManager.add(amount, category, date, budgetName);
@@ -776,6 +784,7 @@ rhit.ExpenseChangePageController = class {
 
 		document.querySelector("#editExpenseAmount").value = rhit.fbExpenseChangeManager.amount;
 		document.querySelector("#editExpenseCategory").value = rhit.fbExpenseChangeManager.category;
+		console.log(rhit.fbExpenseChangeManager.date);
 		let year = rhit.fbExpenseChangeManager.date.toDate().getFullYear();
 		let month = rhit.fbExpenseChangeManager.date.toDate().getMonth();
 		if(month.toString().length == 1) month = "0" + month;
