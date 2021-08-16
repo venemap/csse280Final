@@ -575,6 +575,11 @@ rhit.FbExpenseAddController = class {
 
 			rhit.fbSingleExpenseManager.add(amount, category, date, budgetName);
 		}
+
+		document.querySelector("#cancelAddExpense").onclick = (event) => {
+			window.location.href = "main.html";
+		}
+
 		rhit.fbSingleExpenseManager.beginListening(this.updateList.bind(this));
 	}
 
@@ -599,12 +604,6 @@ rhit.FbExpenseAddController = class {
 		for (let i = 0; i < rhit.fbSingleExpenseManager.budgetLength; i++) {
 			const budget = rhit.fbSingleExpenseManager.getBudgetAtIndex(i);
 			const newbudgetDropdown = this._createBudgetDropdown(budget);
-
-			newbudgetDropdown.onclick = (event) => {
-				// console.log(`you clicked on ${budget.id}`);
-
-				// window.location.href = `/expenseEdit.html?id=${exp.id}`;
-			}
 
 			newList.appendChild(newbudgetDropdown);
 		}
@@ -658,6 +657,9 @@ rhit.FbBudgetController = class {
 				// If this uncommented, the add doesnt finish before redirecting
 				// window.location.href = "/budgetOverview.html";
 			}
+		}
+		document.querySelector("#cancelAddBudget").onclick = (event) => {
+			window.location.href = "budgetOverview.html";
 		}
 	}
 }
@@ -749,6 +751,7 @@ rhit.FbBudgetChangeManager = class {
 			})
 			.then(() => {
 				console.log("document succesfully updated");
+				window.location.href = "budgetOverview.html";
 			})
 			.catch(function (error) {
 				console.error("Error updating document: ", error);
@@ -778,6 +781,10 @@ rhit.ExpenseChangePageController = class {
 			rhit.fbExpenseChangeManager.update(amount, category);
 		}
 
+		document.querySelector("#cancelEditExpense").onclick = (event) => {
+			window.location.href = "expenseHistory.html";
+		}
+
 		rhit.fbExpenseChangeManager.beginListening(this.updateView.bind(this));
 	}
 
@@ -788,9 +795,9 @@ rhit.ExpenseChangePageController = class {
 		document.querySelector("#editExpenseCategory").value = rhit.fbExpenseChangeManager.category;
 		console.log(rhit.fbExpenseChangeManager.date);
 		let year = rhit.fbExpenseChangeManager.date.toDate().getFullYear();
-		let month = rhit.fbExpenseChangeManager.date.toDate().getMonth();
+		let month = rhit.fbExpenseChangeManager.date.toDate().getMonth() + 1;
 		if(month.toString().length == 1) month = "0" + month;
-		let day = rhit.fbExpenseChangeManager.date.toDate().getDay();
+		let day = rhit.fbExpenseChangeManager.date.toDate().getDate();
 		if(day.toString().length == 1) day = "0"+ day;
 		let temp = year + "-" + month + "-" + day;
 		console.log(temp);
@@ -808,6 +815,9 @@ rhit.BudgetChangeController = class {
 			const category = document.querySelector("#editBudgetCategory").value;
 			rhit.fbBudgetChangeManager.update(amount, category);
 			console.log(amount, category);
+		}
+		document.querySelector("#cancelEditBudget").onclick = (event) => {
+			window.location.href = "budgetOverview.html";
 		}
 
 		rhit.fbBudgetChangeManager.beginListening(this.updateView.bind(this));
@@ -1003,6 +1013,8 @@ rhit.AuthManager = class {
 				}
 			});
 		});
+
+		sessionStorage.setItem('showMainPopup', true);
 	}
 
 	signOut() {
@@ -1027,14 +1039,6 @@ rhit.checkForRedirects = function () {
 
 		window.location.href = "/main.html";
 
-
-		$(document).ready( function () {
-			$('#myModal').modal('show');
-		  });
-		  console.log("redirecting to main");
-		window.onload = function() {
-			$('#myModal').modal('show');
-		  };
 
 
 	}
@@ -1065,12 +1069,6 @@ rhit.initializePage = function () {
 		hide.addEventListener("click", function () {
 			document.querySelector("body").classList.toggle("active");
 		})
-	}
-	if (document.querySelector("#loginPage")) {
-		let forgotLogin = document.querySelector("#createAccountBtn").onclick = (params) => {
-			window.location.href = "accountCreation.html";
-		};
-
 	}
 
 	if (document.querySelector("#budgetOverviewPage")) {
@@ -1171,9 +1169,15 @@ rhit.initializePage = function () {
 
 
 		new rhit.OverviewController();
-
-		$('#myModal').modal('show');
+		if(sessionStorage.getItem('showMainPopup') == 'true')
+		{
+			$('#myModal').modal('show');
+			sessionStorage.setItem('showMainPopup', false)
+		}
 	}
+
+	if(document.getElementById("date"))	document.getElementById("date").innerHTML = m + "/" + d + "/" + y;
+
 }
 
 /* Main */
@@ -1198,7 +1202,6 @@ rhit.main = function () {
 
 		rhit.initializePage();
 
-		document.getElementById("date").innerHTML = m + "/" + d + "/" + y;
 
 	});
 
