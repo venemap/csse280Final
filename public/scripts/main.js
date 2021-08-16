@@ -636,6 +636,7 @@ rhit.FbSingleBudgetManager = class {
 			})
 			.then(function (docRef) {
 				console.log("document written with id: ", docRef);
+				window.location.href = "budgetOverview.html";
 			})
 			.catch(function (error) {
 				console.error("Error adding to document: ", error);
