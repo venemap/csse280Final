@@ -491,6 +491,7 @@ rhit.FbSingleExpenseManager = class {
 			})
 			.then(function (docRef) {
 				console.log("document written with id: ", docRef);
+				window.location.href = "main.html";
 			})
 			.catch(function (error) {
 				console.error("Error adding to document: ", error);
