@@ -776,7 +776,15 @@ rhit.ExpenseChangePageController = class {
 
 		document.querySelector("#editExpenseAmount").value = rhit.fbExpenseChangeManager.amount;
 		document.querySelector("#editExpenseCategory").value = rhit.fbExpenseChangeManager.category;
-		document.querySelector("#editExpenseDate").value = rhit.fbExpenseChangeManager.date;
+		let year = rhit.fbExpenseChangeManager.date.toDate().getFullYear();
+		let month = rhit.fbExpenseChangeManager.date.toDate().getMonth();
+		if(month.toString().length == 1) month = "0" + month;
+		let day = rhit.fbExpenseChangeManager.date.toDate().getDay();
+		if(day.toString().length == 1) day = "0"+ day;
+		let temp = year + "-" + month + "-" + day;
+		console.log(temp);
+		console.log(year, month, day);
+		document.querySelector("#editExpenseDate").value = temp;
 	}
 }
 
