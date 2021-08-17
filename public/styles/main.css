@@ -2,6 +2,10 @@ body {
     background: #DDDDDD;
 }
 
+#barChart{
+    text-align: center;
+}
+
 #budgetOverviewPage h1{
     padding-bottom: 20px;
 }

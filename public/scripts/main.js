@@ -2,7 +2,7 @@ var rhit = rhit || {};
 
 /** globals */
 rhit.variableName = "";
-n =  new Date();
+n = new Date();
 y = n.getFullYear();
 m = n.getMonth() + 1;
 d = n.getDate();
@@ -70,7 +70,7 @@ rhit.BudgetListPageController = class {
 			total = 0;
 			for (let j = 0; j < rhit.fbBudgetManager.expenseLength; j++) {
 				const expense = rhit.fbBudgetManager.getExpenseAtIndex(j);
-				if (expense.budgetName == budget.category){
+				if (expense.budgetName == budget.category) {
 					console.log(expense, budget);
 					total += parseInt(expense.amount);
 				}
@@ -91,12 +91,13 @@ rhit.BudgetListPageController = class {
 			}
 			newList.appendChild(newBudget);
 		}
-		
+
 		const oldBudget = document.querySelector("#BudgetOverview-Label");
 		oldBudget.removeAttribute("id");
 		oldBudget.hidden = true;
 		oldBudget.parentElement.appendChild(newList);
 
+		document.querySelector("#budgetTitle").innerHTML = `<h2>$${rhit.fbBudgetManager.totalBudgetsAmount-rhit.fbBudgetManager.totalExpensesAmount} left in account<h2>`
 	}
 
 }
@@ -115,7 +116,7 @@ rhit.FbBudgetManager = class {
 	beginListening(changeListener) {
 		let query = this._ref.limit(30);
 
-		if(this._uid) {
+		if (this._uid) {
 			query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
 		}
 
@@ -132,7 +133,7 @@ rhit.FbBudgetManager = class {
 		})
 
 		query = this._expenseRef.limit(30);
-		if(this._uid) {
+		if (this._uid) {
 			query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
 		}
 		this._unsubscribe = query.onSnapshot((querySnapshot) => {
@@ -143,14 +144,14 @@ rhit.FbBudgetManager = class {
 			})
 			changeListener();
 		})
-		
+
 	}
 
 	stopListening() {
 		this._unsubscribe();
 	}
 
-	delete(id){
+	delete(id) {
 		return this._ref.doc(id).delete();
 	}
 
@@ -186,18 +187,26 @@ rhit.FbBudgetManager = class {
 
 	get totalBudgetsAmount() {
 		let total = 0;
-		for (let i = 0; i < this._documentSnapshots.length; i++){
+		for (let i = 0; i < this._documentSnapshots.length; i++) {
 			total += parseInt(this.getBudgetAtIndex(i).amount);
 		}
 		return total;
 	}
 
+	get totalExpensesAmount() {
+		let totalExp = 0;
+		for (let i = 0; i < this._expenseSnapshots.length; i++) {
+			totalExp += parseInt(this.getExpenseAtIndex(i).amount);
+		}
+		return totalExp;
+	}
+
 	totalExpenseForBudget(budgetName) {
 		console.log("total expense per budget");
 		let total = 0;
-		for(let i = 0; i < this._expenseSnapshots.length; i++){
+		for (let i = 0; i < this._expenseSnapshots.length; i++) {
 			console.log("expense[budgetCategory]: " + this.getExpenseAtIndex(i).budgetName);
-			if(this.getExpenseAtIndex(i).budgetName == budgetName){
+			if (this.getExpenseAtIndex(i).budgetName == budgetName) {
 				total += parseInt(this.getExpenseAtIndex(i).amount);
 			}
 
@@ -269,7 +278,7 @@ rhit.BudgetMoreInfoController = class {
 			<span>${category} $${amount} </span>  
 			
 			<span class="expenseRightSideWrapper">
-				<span class="expenseDate">${date.toDate().getMonth()}/${date.toDate().getDay()}/${date.toDate().getFullYear()}</span>
+				<span class="expenseDate">${date.toDate().getMonth()+1}/${date.toDate().getDate()}/${date.toDate().getFullYear()}</span>
 	
 				<span class="dropdown pull-xs-right expense-option-menu">
 					<button class="btn bmd-btn-icon dropdown-toggle" type="button" id="lr1" data-toggle="dropdown">
@@ -282,15 +291,14 @@ rhit.BudgetMoreInfoController = class {
 				</span>
 			</span>
 		</div>
-		<hr>`
-		);
+		<hr>`);
 	}
 
 }
 
 rhit.BudgetMoreInfoManager = class {
 	constructor(uid, categoryName) {
-		this._documentSnapshots = [];
+		this._documentSnapshot = [];
 		this._ref = firebase.firestore().collection(rhit.FB_EXPENSE_COLLECTION);
 		this._unsubscribe = null;
 		this._uid = uid;
@@ -299,18 +307,19 @@ rhit.BudgetMoreInfoManager = class {
 
 	beginListening(changeListener) {
 		let query = this._ref.limit(30);
-		
-		if(this._uid) query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
+
+		if (this._uid) {
+			query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
+		}
 
 		this._unsubscribe = query.onSnapshot((querySnapshot) => {
-			this._documentSnapshots = querySnapshot.docs;
+			this._documentSnapshot = querySnapshot.docs;
 
 			querySnapshot.forEach((doc) => {
 				console.log(doc);
-			})
-		})
-
-		changeListener();
+			});
+			changeListener();
+		});
 	}
 
 	stopListening() {
@@ -318,11 +327,11 @@ rhit.BudgetMoreInfoManager = class {
 	}
 
 	get length() {
-		return this._documentSnapshots.length;
+		return this._documentSnapshot.length;
 	}
 
 	getExpenseAtIndex(index) {
-		const docSnapshot = this._documentSnapshots[index];
+		const docSnapshot = this._documentSnapshot[index];
 		const exp = new rhit.Expense(
 			docSnapshot.id,
 			docSnapshot.get(rhit.FB_KEY_CATEGORY),
@@ -370,8 +379,7 @@ rhit.ExpenseListPageController = class {
 				</span>
 			</span>
 		</div>
-		<hr>`
-		);
+		<hr>`);
 	}
 
 	updateList() {
@@ -393,7 +401,7 @@ rhit.ExpenseListPageController = class {
 				console.log(i, "delete");
 				rhit.fbExpenseManager.delete(exp.id).then(() => {
 					console.log("deleting" + exp.id);
-					
+
 				}).catch(error => console.error("error removing document", error));
 			}
 
@@ -425,7 +433,7 @@ rhit.FbExpenseManager = class {
 		// console.log("beginning to listen for budgets to fill dropdown");
 		let query = this._ref.limit(30);
 
-		if(this._uid) {
+		if (this._uid) {
 			query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
 		}
 
@@ -502,7 +510,7 @@ rhit.FbSingleExpenseManager = class {
 	beginListening(changeListener) {
 		let query = this._ref.limit(30);
 
-		if(this._uid) {
+		if (this._uid) {
 			query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
 		}
 
@@ -520,7 +528,7 @@ rhit.FbSingleExpenseManager = class {
 
 		query = this._budgetRef.limit(30);
 
-		if(this._uid) {
+		if (this._uid) {
 			query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
 		}
 
@@ -584,7 +592,7 @@ rhit.FbExpenseAddController = class {
 	}
 
 	_createBudgetDropdown(budget) {
-		if(!budget){
+		if (!budget) {
 			return htmlToElement(`<option value="">No Budget</option>`);
 		}
 		let category = budget.category;
@@ -650,7 +658,7 @@ rhit.FbBudgetController = class {
 			const amount = document.querySelector("#addBudgetAmount").value;
 			const category = document.querySelector("#addBudgetCategory").value;
 
-			if(amount != "" && category != ""){
+			if (amount != "" && category != "") {
 				console.log(`${amount}, ${category}`);
 				rhit.fbSingleBudgetManager.add(amount, category);
 
@@ -796,9 +804,9 @@ rhit.ExpenseChangePageController = class {
 		console.log(rhit.fbExpenseChangeManager.date);
 		let year = rhit.fbExpenseChangeManager.date.toDate().getFullYear();
 		let month = rhit.fbExpenseChangeManager.date.toDate().getMonth() + 1;
-		if(month.toString().length == 1) month = "0" + month;
+		if (month.toString().length == 1) month = "0" + month;
 		let day = rhit.fbExpenseChangeManager.date.toDate().getDate();
-		if(day.toString().length == 1) day = "0"+ day;
+		if (day.toString().length == 1) day = "0" + day;
 		let temp = year + "-" + month + "-" + day;
 		console.log(temp);
 		console.log(year, month, day);
@@ -848,7 +856,7 @@ rhit.OverviewController = class {
 		this._labels = [];
 		this._data = [];
 		this._backgroundColors = [];
-		this._tempColors = ["#FF6384", "#4BC0C0", "#FFCE56", "#E7E9ED",	"#36A2EB"]
+		this._tempColors = ["#FF6384", "#4BC0C0", "#FFCE56", "#E7E9ED", "#36A2EB"]
 	}
 
 	updateList() {
@@ -890,7 +898,7 @@ rhit.OverviewController = class {
 
 
 
-		
+
 		console.log("labels: " + this._labels);
 		console.log("data: " + this._data);
 
@@ -904,8 +912,7 @@ rhit.OverviewController = class {
 			type: 'pie',
 			data: {
 				labels: this._labels,
-				datasets: [
-				{
+				datasets: [{
 					data: this._data,
 					backgroundColor: this._tempColors,
 				}]
@@ -928,7 +935,7 @@ rhit.OverviewController = class {
 
 		console.log(rhit.fbBudgetManager.totalBudgetsAmount);
 
-		document.querySelector("#overviewStatus").innerHTML = `${rhit.fbAuthManager.uid}, you have $${rhit.fbBudgetManager.totalBudgetsAmount} left in your budgets`
+		document.querySelector("#overviewStatus").innerHTML = `${rhit.fbAuthManager.uid}, you have $${rhit.fbBudgetManager.totalBudgetsAmount-rhit.fbBudgetManager.totalExpensesAmount} left in your budgets`
 
 
 	}
@@ -940,8 +947,7 @@ rhit.OverviewController = class {
 
 		return htmlToElement(`
 		<div> ${category}: $ ${amt} / ${amount}
-		</div>`
-		);
+		</div>`);
 	}
 
 
@@ -1053,7 +1059,7 @@ rhit.checkForRedirects = function () {
 
 rhit.initializePage = function () {
 	const urlParams = new URLSearchParams(window.location.search);
-	
+
 	if (document.querySelector("#loginPage")) {
 		new rhit.LoginPageController();
 	}
@@ -1121,7 +1127,7 @@ rhit.initializePage = function () {
 		new rhit.ExpenseChangePageController();
 	}
 
-	if (document.querySelector("#budgetEditPage")){
+	if (document.querySelector("#budgetEditPage")) {
 		console.log("on budget edit page");
 
 		const queryString = window.location.search;
@@ -1131,14 +1137,14 @@ rhit.initializePage = function () {
 
 		console.log(`Detail page for ${budgetId}`);
 
-		if(!budgetId){
+		if (!budgetId) {
 			console.log("Missing budget id");
 		}
 		rhit.fbBudgetChangeManager = new rhit.FbBudgetChangeManager(budgetId);
 		new rhit.BudgetChangeController();
 	}
 
-	if (document.querySelector("#moreInfo")){
+	if (document.querySelector("#moreInfo")) {
 		const queryString = window.location.search;
 		console.log(queryString);
 		const urlParams = new URLSearchParams(queryString);
@@ -1146,15 +1152,15 @@ rhit.initializePage = function () {
 
 		console.log("more info for " + budgetCategory);
 
-		
-		rhit.fbBudgetMoreInfoManager = new rhit.BudgetMoreInfoManager(rhit.fbAuthManager.uid, budgetCategory);
+
+		rhit.fbBudgetMoreInfoManager = new rhit.BudgetMoreInfoManager(this.fbAuthManager.uid, budgetCategory);
 
 		new rhit.BudgetMoreInfoController();
 
 	}
 
 
-	if(document.querySelector("#mainPage")){
+	if (document.querySelector("#mainPage")) {
 		rhit.fbBudgetManager = new rhit.FbBudgetManager(rhit.fbAuthManager.uid);
 
 		document.querySelector("#expenseCreation").onclick = (event) => {
@@ -1169,14 +1175,13 @@ rhit.initializePage = function () {
 
 
 		new rhit.OverviewController();
-		if(sessionStorage.getItem('showMainPopup') == 'true')
-		{
+		if (sessionStorage.getItem('showMainPopup') == 'true') {
 			$('#myModal').modal('show');
 			sessionStorage.setItem('showMainPopup', false)
 		}
 	}
 
-	if(document.getElementById("date"))	document.getElementById("date").innerHTML = m + "/" + d + "/" + y;
+	if (document.getElementById("date")) document.getElementById("date").innerHTML = m + "/" + d + "/" + y;
 
 }
 
@@ -1207,7 +1212,7 @@ rhit.main = function () {
 
 
 
-	
+
 
 
 
