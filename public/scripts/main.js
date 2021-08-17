@@ -598,8 +598,19 @@ rhit.FbExpenseAddController = class {
 			console.log(date);
 			console.log(date.toDate());
 
+			console.log("!!amount", !!!amount);
+			console.log("!!category", !!category);
+			console.log("!!date", !!document.querySelector("#addExpenseDate").value);
+			if((amount &&  category && !!document.querySelector("#addExpenseDate").value))
+			{
+				console.log("good to submit");					
+				rhit.fbSingleExpenseManager.add(amount, category, date, budgetName);
 
-			rhit.fbSingleExpenseManager.add(amount, category, date, budgetName);
+			}
+			else{
+				console.error("add all to submit");
+				//TODO: Add alert to notify user
+			}
 		}
 
 		document.querySelector("#cancelAddExpense").onclick = (event) => {
