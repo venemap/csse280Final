@@ -99,9 +99,13 @@ rhit.BudgetListPageController = class {
 		oldBudget.parentElement.appendChild(newList);
 
 		const dateHolder = rhit.fbBudgetManager.oldestExpense;
+		console.log("dateHolder: " + dateHolder);
 		const timeDiff = n.getTime()-dateHolder.getTime();
 		const diffInDays = parseInt(timeDiff/(1000 * 3600 * 24));
 		const avgSpending = rhit.fbBudgetManager.totalExpensesAmount/diffInDays;
+
+		console.log("ttl budgets: " + rhit.fbBudgetManager.totalBudgetsAmount);
+		console.log("ttl expenses: " + rhit.fbBudgetManager.totalExpensesAmount);
 
 		document.querySelector("#budgetTitle").innerHTML = 
 		`<h2>$${rhit.fbBudgetManager.totalBudgetsAmount-rhit.fbBudgetManager.totalExpensesAmount} left in account<h2>
@@ -204,7 +208,8 @@ rhit.FbBudgetManager = class {
 	get totalExpensesAmount() {
 		let totalExp = 0;
 		for (let i = 0; i < this._expenseSnapshots.length; i++) {
-			totalExp += parseInt(this.getExpenseAtIndex(i).amount);
+			if(this.getExpenseAtIndex(i).budgetName != "") totalExp += parseInt(this.getExpenseAtIndex(i).amount);
+			// console.log(this.getExpenseAtIndex(i));
 		}
 		return totalExp;
 	}
@@ -247,6 +252,7 @@ rhit.Expense = class {
 
 rhit.BudgetMoreInfoController = class {
 	constructor() {
+		
 		// console.log("making more info controller");
 		rhit.fbBudgetMoreInfoManager.beginListening(this.updateList.bind(this));
 	}
@@ -318,7 +324,7 @@ rhit.BudgetMoreInfoManager = class {
 	}
 
 	beginListening(changeListener) {
-		let query = this._ref.limit(30);
+		let query = this._ref.limit(30).where(rhit.FB_KEY_BUDGETID, "==", this._categoryName);
 
 		if (this._uid) {
 			query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
@@ -1163,6 +1169,7 @@ rhit.initializePage = function () {
 		const budgetCategory = urlParams.get("id");
 
 		console.log("more info for " + budgetCategory);
+		document.querySelector("#expenseTitle").innerHTML += " - " + budgetCategory;
 
 
 		rhit.fbBudgetMoreInfoManager = new rhit.BudgetMoreInfoManager(this.fbAuthManager.uid, budgetCategory);
