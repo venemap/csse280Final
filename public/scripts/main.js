@@ -691,8 +691,10 @@ rhit.FbBudgetController = class {
 				console.log(`${amount}, ${category}`);
 				rhit.fbSingleBudgetManager.add(amount, category);
 
-				// If this uncommented, the add doesnt finish before redirecting
-				// window.location.href = "/budgetOverview.html";
+			}
+			else {
+				console.error("enter all budget categories");
+				//TODO: add alert to user
 			}
 		}
 		document.querySelector("#cancelAddBudget").onclick = (event) => {
