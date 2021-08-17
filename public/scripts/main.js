@@ -58,6 +58,7 @@ rhit.BudgetListPageController = class {
 		console.log("update the page for budgets");
 
 		console.log(`Num budgets = ${rhit.fbBudgetManager.length}`);
+		console.log(y);
 		//console.log(`Example Budget: `, rhit.fbBudgetManager.getBudgetAtIndex(0));
 
 		const newList = htmlToElement('<div id="BudgetOverview-Label"></div>')
@@ -97,7 +98,14 @@ rhit.BudgetListPageController = class {
 		oldBudget.hidden = true;
 		oldBudget.parentElement.appendChild(newList);
 
-		document.querySelector("#budgetTitle").innerHTML = `<h2>$${rhit.fbBudgetManager.totalBudgetsAmount-rhit.fbBudgetManager.totalExpensesAmount} left in account<h2>`
+		const dateHolder = rhit.fbBudgetManager.oldestExpense;
+		const timeDiff = n.getTime()-dateHolder.getTime();
+		const diffInDays = parseInt(timeDiff/(1000 * 3600 * 24));
+		const avgSpending = rhit.fbBudgetManager.totalExpensesAmount/diffInDays;
+
+		document.querySelector("#budgetTitle").innerHTML = 
+		`<h2>$${rhit.fbBudgetManager.totalBudgetsAmount-rhit.fbBudgetManager.totalExpensesAmount} left in account<h2>
+		<h3>You are currently spending $${avgSpending} per day.</h3> <h3>${Math.round(rhit.fbBudgetManager.totalBudgetsAmount/avgSpending)} days left before running out of money</h3>`
 	}
 
 }
@@ -201,6 +209,10 @@ rhit.FbBudgetManager = class {
 		return totalExp;
 	}
 
+	get oldestExpense(){
+		return this.getExpenseAtIndex(this._expenseSnapshots.length-1).date.toDate();
+	}
+
 	totalExpenseForBudget(budgetName) {
 		console.log("total expense per budget");
 		let total = 0;
@@ -275,7 +287,7 @@ rhit.BudgetMoreInfoController = class {
 		}
 		return htmlToElement(`
 		<div id="ExpenseOverview-Label">
-			<span>${category} $${amount} </span>  
+			<span>${category}: $${amount} </span>  
 			
 			<span class="expenseRightSideWrapper">
 				<span class="expenseDate">${date.toDate().getMonth()+1}/${date.toDate().getDate()}/${date.toDate().getFullYear()}</span>
@@ -363,7 +375,7 @@ rhit.ExpenseListPageController = class {
 		}
 		return htmlToElement(`
 		<div id="ExpenseOverview-Label">
-			<span>${category} $${amount} </span>  
+			<span>${category}: $${amount} </span>  
 			
 			<span class="expenseRightSideWrapper">
 				<span class="expenseDate">${date.toDate().getMonth() + 1}/${date.toDate().getDate()}/${date.toDate().getFullYear()}</span>
