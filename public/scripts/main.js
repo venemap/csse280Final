@@ -109,7 +109,7 @@ rhit.BudgetListPageController = class {
 
 		document.querySelector("#budgetTitle").innerHTML = 
 		`<h2>$${rhit.fbBudgetManager.totalBudgetsAmount-rhit.fbBudgetManager.totalExpensesAmount} left in account<h2>
-		<h3>You are currently spending $${avgSpending} per day.</h3> <h3>${Math.round(rhit.fbBudgetManager.totalBudgetsAmount/avgSpending)} days left before running out of money</h3>`
+		<h3>You are currently spending $${avgSpending.toFixed(2)} per day.</h3> <h3>${Math.round(rhit.fbBudgetManager.totalBudgetsAmount/avgSpending)} days left before running out of money</h3>`
 	}
 
 }
