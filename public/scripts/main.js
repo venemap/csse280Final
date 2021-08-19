@@ -708,6 +708,7 @@ rhit.FbExpenseChangeManager = class {
 			})
 			.then(() => {
 				console.log("document succesfully updated");
+				window.location.href = "expenseHistory.html";
 			})
 			.catch(function (error) {
 				console.error("Error updating document: ", error);
