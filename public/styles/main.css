@@ -180,9 +180,9 @@ span.page-container{
 
 
 /* TESTING LOGIN CSS */
-#loginWrapper, #creationWrapper, #recoverWrapper {
+#loginWrapper{
     text-align: center;
-    margin-top: 50%;
+    margin-top: 15%;
     margin-bottom: 50%;
 }
 #loginWrapper input, #creationWrapper input, #recoverWrapper {
