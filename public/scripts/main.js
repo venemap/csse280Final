@@ -84,7 +84,9 @@ rhit.BudgetListPageController = class {
 			}
 			newBudget.querySelector(".budgetDelete").onclick = (event) => {
 				// console.log("deleting budget");
-				rhit.fbBudgetManager.delete(budget.id).then(this.updateList());
+				rhit.fbBudgetManager.delete(budget.id).then((event) => {
+					this.updateList();
+				});
 			}
 			newBudget.querySelector(".moreInfo").onclick = (event) => {
 				window.location.href = `/budgetMoreInfo.html?id=${budget.category}`;
@@ -405,7 +407,7 @@ rhit.ExpenseListPageController = class {
 				window.location.href = `/expenseEdit.html?id=${exp.id}`;
 			}
 			newExpense.querySelector(".expenseDelete").onclick = (event) => {
-				console.log(i, "delete");
+				// console.log(i, "delete");
 				rhit.fbExpenseManager.delete(exp.id).then(() => {
 					// console.log("deleting" + exp.id);
 
